@@ -3,3 +3,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+    @apply font-carlito;
+}
+
+body {
+    @apply bg-gray-200;
+}
+
+.tab {
+    @apply pl-10 text-2xl leading-loose border-b-2;
+}
+
+.tab:hover {
+    @apply bg-blue-500 cursor-pointer text-white;
+}
+
+.hover-brightness-98:hover {
+    filter: brightness(0.98)
+}
