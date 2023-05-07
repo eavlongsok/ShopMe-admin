@@ -13,13 +13,21 @@ body {
 }
 
 .tab {
-    @apply pl-10 text-2xl leading-loose border-b-2;
+    @apply pl-10 text-2xl leading-loose border-b-4;
 }
 
 .tab:hover {
-    @apply bg-blue-500 cursor-pointer text-white;
+    @apply bg-blue-600 cursor-pointer text-gray-100;
 }
 
 .hover-brightness-98:hover {
     filter: brightness(0.98)
+}
+
+.search {
+    background-image: url('/searchicon.svg');
+    background-repeat: no-repeat;
+    background-size: 25px 25px;
+    background-position: 2% 50%;
+    padding-left: 35px;
 }

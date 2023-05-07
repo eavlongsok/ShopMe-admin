@@ -1,22 +1,22 @@
 <template>
     <div class="h-screen border-r-4 bg-white" >
         <ul class="list-none capitalize pt-3 flex flex-col justify-center">
-            <li class="tab">dashboard</li>
-            <li class="tab">seller request</li>
+            <li @click="emitTabEvent(1)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 1}">dashboard</li>
+            <li @click="emitTabEvent(2)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 2}">verification</li>
         </ul>
     </div>
 </template>
 
 <script>
-    export default {
-        name: 'Sidebar',
-        props: ['active'],
-        methods: [
-            function changeTab(tabID) {
-                this.active = tabID;
-            }
-        ]
+export default {
+    name: 'Sidebar',
+    props: ['active'],
+    methods: {
+        emitTabEvent(tabID) {
+            this.$emit("changetab", tabID)
+        }
     }
+}
 </script>
 
 <style scoped>
