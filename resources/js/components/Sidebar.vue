@@ -20,5 +20,11 @@ export default {
 </script>
 
 <style scoped>
+    .tab {
+        @apply pl-10 text-2xl leading-loose border-b-4;
+    }
 
+    .tab:hover {
+        @apply bg-blue-600 cursor-pointer text-gray-100;
+    }
 </style>

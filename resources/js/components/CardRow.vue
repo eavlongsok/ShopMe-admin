@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-row justify-around mt-5 flex-wrap">
+    <div class="flex flex-row justify-around flex-wrap">
         <Card title="title 1" value="10" color="red" />
         <Card title="title 2" value="20" color="blue" />
         <Card title="title 3" value="30" color="magenta" />
