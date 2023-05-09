@@ -1,11 +1,13 @@
 <template>
-    <div class="mt-16">
+    <Login v-if="loggedIn === false"/>
+    <div class="mt-16" v-else-if="loggedIn === true">
         <Header />
         <div class="grid grid-cols-10 gap-3">
             <Sidebar class="col-span-2" :active="active" @changetab="changeTab"/>
-            <div class="col-span-8">
-                <DashBoard v-if="active === 1"/>
+            <div class="col-span-8 mt-5">
+                <Home v-if="active === 1" @verifytab="changeTab"/>
                 <Verification v-else-if="active === 2"/>
+                <BannedUsers v-else-if="active === 4" />
             </div>
         </div>
     </div>
@@ -15,21 +17,31 @@
     import Sidebar from './components/Sidebar.vue'
     import Header from './components/Header.vue'
     import ProfileBox from './components/ProfileBox.vue'
-    import DashBoard from './components/DashBoard.vue'
+    import Home from './components/Home.vue'
     import Verification from './components/Verification.vue'
+    import BannedUsers from './components/BannedUsers.vue'
+    import Login from './components/Login.vue'
 
     export default {
         data() {
             return {
-                active: 1
+                active: 1,
+                loggedIn: true
             }
         },
         components: {
-            Sidebar, Header, ProfileBox, DashBoard, Verification
+            Sidebar,
+            Header,
+            ProfileBox,
+            Home,
+            Verification,
+            BannedUsers,
+            Login
         },
         methods: {
             changeTab(tabID) {
                 this.active = tabID
+                window.scrollTo(0,0)
             }
         }
     }
