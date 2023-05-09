@@ -2,9 +2,9 @@
     <Login v-if="loggedIn === false"/>
     <div class="mt-16" v-else-if="loggedIn === true">
         <Header />
-        <div class="grid grid-cols-10 gap-3">
-            <Sidebar class="col-span-2" :active="active" @changetab="changeTab"/>
-            <div class="col-span-8 mt-5">
+        <div class="">
+            <Sidebar class="fixed w-1/5 z-[1]" :active="active" @changetab="changeTab"/>
+            <div class="w-[79%] ml-[21%] pt-5">
                 <Home v-if="active === 1" @verifytab="changeTab"/>
                 <Verification v-else-if="active === 2"/>
                 <BannedUsers v-else-if="active === 4" />

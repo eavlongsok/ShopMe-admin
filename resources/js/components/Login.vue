@@ -14,7 +14,7 @@
                     <input ref="password" type="password" class="input-box"/>
 
                     <br/>
-                    <span class="cursor-pointer hover:font-bold leading-loose" @click="showPassword()">Show password</span>
+                    <span class="cursor-pointer hover:font-bold leading-loose" @click="showPassword()" ref="toggle">Show password</span>
 
                     <button type="submit" class="border-2 border-gray-500 w-full rounded-md block bg-blue-500 text-white leading-loose text-xl mt-5 hover:bg-blue-600">Sign in</button>
                 </form>
@@ -30,9 +30,16 @@
             showPassword() {
                 console.log("hi")
                 let target = this.$refs.password
+                let textBox = this.$refs.toggle
 
-                if (target.type === 'password') target.type = 'text'
-                else target.type = 'password'
+                if (target.type === 'password') {
+                    target.type = 'text'
+                    textBox.innerText = 'Hide password'
+                }
+                else {
+                    target.type = 'password'
+                    textBox.innerText = 'Show password'
+                }
             }
         },
         mounted() {

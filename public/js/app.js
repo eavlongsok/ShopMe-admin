@@ -19396,7 +19396,14 @@ __webpack_require__.r(__webpack_exports__);
     showPassword: function showPassword() {
       console.log("hi");
       var target = this.$refs.password;
-      if (target.type === 'password') target.type = 'text';else target.type = 'password';
+      var textBox = this.$refs.toggle;
+      if (target.type === 'password') {
+        target.type = 'text';
+        textBox.innerText = 'Hide password';
+      } else {
+        target.type = 'password';
+        textBox.innerText = 'Show password';
+      }
     }
   },
   mounted: function mounted() {
@@ -19482,6 +19489,81 @@ __webpack_require__.r(__webpack_exports__);
     return {
       fields: ['No.', 'Store Name', "Seller's Name", 'Email', 'Submission date'],
       sellers: [{
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
+        store_name: 'Shopme',
+        name: 'Eav Long Sok',
+        email: 'esok@paragoniu.edu.kh',
+        submission_date: '19/03/2012'
+      }, {
         store_name: 'Shopme',
         name: 'Eav Long Sok',
         email: 'esok@paragoniu.edu.kh',
@@ -19725,7 +19807,7 @@ var _hoisted_1 = {
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
-    "class": "inline-block border-l-8 h-32 w-64 bg-white text-2xl capitalize pl-5 pt-5 hover-brightness-97 select-text rounded-lg shadow-xl",
+    "class": "inline-block border-l-8 h-32 w-72 bg-white text-2xl capitalize pl-5 pt-5 hover-brightness-97 select-text rounded-lg shadow-xl",
     style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)({
       'border-color': $props.color
     })
@@ -19913,8 +19995,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "cursor-pointer hover:font-bold leading-loose",
     onClick: _cache[0] || (_cache[0] = function ($event) {
       return $options.showPassword();
-    })
-  }, "Show password"), _hoisted_12])])])]);
+    }),
+    ref: "toggle"
+  }, "Show password", 512 /* NEED_PATCH */), _hoisted_12])])])]);
 }
 
 /***/ }),
@@ -20231,10 +20314,10 @@ var _hoisted_1 = {
   "class": "mt-16"
 };
 var _hoisted_2 = {
-  "class": "grid grid-cols-10 gap-3"
+  "class": ""
 };
 var _hoisted_3 = {
-  "class": "col-span-8 mt-5"
+  "class": "w-[79%] ml-[21%] pt-5"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Login = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Login");
@@ -20246,7 +20329,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   return $data.loggedIn === false ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Login, {
     key: 0
   })) : $data.loggedIn === true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Header), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Sidebar, {
-    "class": "col-span-2",
+    "class": "fixed w-1/5 z-[1]",
     active: $data.active,
     onChangetab: $options.changeTab
   }, null, 8 /* PROPS */, ["active", "onChangetab"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [$data.active === 1 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Home, {
