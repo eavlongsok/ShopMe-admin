@@ -1,11 +1,11 @@
 <template>
     <h2 class="heading-2 mb-3">seller verification</h2>
-    <Table class="w-11/12 mt-10" :fields="fields">
+    <Table class="w-11/12 mt-10 mb-5" :fields="fields">
         <tbody>
             <tr v-for="(seller, index) in sellers">
                 <td>{{ index + 1 }}</td>
-                <td>{{ seller.store_name }}</td>
-                <td><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ seller.name }}</td>
+                <td><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ seller.store_name }}</td>
+                <td>{{ seller.name }}</td>
                 <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{ seller.email }}</td>
                 <td>{{ seller.submission_date }}</td>
             </tr>
@@ -56,7 +56,7 @@
                 emailBox.innerText = "Copied!"
                 setTimeout(() => {
                     emailBox.innerText = email
-                }, 170)
+                }, 200)
             }
         }
     }

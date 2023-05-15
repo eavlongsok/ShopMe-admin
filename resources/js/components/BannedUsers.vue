@@ -11,8 +11,8 @@
                     <td>{{ buyer.name }}</td>
                     <td>{{ buyer.created_at }}</td>
                     <td>{{ buyer.ban_date }}</td>
-                    <td><button class="bg-blue-700 rounded-xl p-1 border-2 border-black hover:bg-blue-900 py-0">Show</button></td>
-                    <td><button class="bg-red-700 rounded-xl p-1 border-2 border-black hover:bg-red-900 py-0">Unban</button></td>
+                    <td><button class="bg-green-800 rounded-xl p-2 border-2 border-black hover:bg-green-900 py-0">Show</button></td>
+                    <td><button class="bg-red-700 rounded-xl p-2 border-2 border-black hover:bg-red-900 py-0">Unban</button></td>
                 </tr>
             </tbody>
         </Table>
@@ -24,8 +24,8 @@
                     <td>{{ seller.name }}</td>
                     <td>{{ seller.registration_date }}</td>
                     <td>{{ seller.ban_date }}</td>
-                    <td><button class="bg-blue-700 rounded-xl p-1 border-2 border-black hover:bg-blue-900 py-0">Show</button></td>
-                    <td><button class="bg-red-700 rounded-xl p-1 border-2 border-black hover:bg-red-900 py-0">Unban</button></td>
+                    <td><button class="bg-green-800 rounded-xl p-2 border-2 border-black hover:bg-green-900 py-0">Show</button></td>
+                    <td><button class="bg-red-700 rounded-xl p-2 border-2 border-black hover:bg-red-900 py-0">Unban</button></td>
                 </tr>
             </tbody>
     </Table>

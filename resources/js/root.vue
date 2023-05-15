@@ -1,12 +1,13 @@
 <template>
     <Login v-if="loggedIn === false"/>
     <div class="mt-16" v-else-if="loggedIn === true">
-        <Header />
+        <Header :active="active"/>
         <div class="">
             <Sidebar class="fixed w-1/5 z-[1]" :active="active" @changetab="changeTab"/>
             <div class="w-[79%] ml-[21%] pt-5">
                 <Home v-if="active === 1" @verifytab="changeTab"/>
                 <Verification v-else-if="active === 2"/>
+                <Ban v-else-if="active === 3" />
                 <BannedUsers v-else-if="active === 4" />
             </div>
         </div>
@@ -21,6 +22,7 @@
     import Verification from './components/Verification.vue'
     import BannedUsers from './components/BannedUsers.vue'
     import Login from './components/Login.vue'
+    import Ban from './components/Ban.vue'
 
     export default {
         data() {
@@ -36,7 +38,8 @@
             Home,
             Verification,
             BannedUsers,
-            Login
+            Login,
+            Ban
         },
         methods: {
             changeTab(tabID) {

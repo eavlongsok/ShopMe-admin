@@ -1,8 +1,9 @@
 <template>
     <h2 class="heading-2 mt-10 mb-3 inline-block">Verification</h2>
     <span class="hover:font-bold hover:underline ml-3 text-sm cursor-pointer" @click="emitTabEvent(2)">View All</span>
-    <Table class="w-11/12" :fields="fields">
-        <tbody class="select-text">
+
+    <Table class="w-11/12 shadow-xl" :fields="fields">
+        <tbody>
             <tr>
                 <td>1</td>
                 <td>ShopMe</td>
