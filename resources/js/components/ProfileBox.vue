@@ -5,7 +5,7 @@
         <div class="dropdown-menu rounded-lg">
             <ul>
                 <li class="dropdown-item hover:bg-gray-300">profile</li>
-                <li class="dropdown-item bg-red-600 text-white hover:bg-red-800">log out</li>
+                <li class="dropdown-item bg-red-600 text-white hover:bg-red-800" @click="$emit('logout')">log out</li>
             </ul>
         </div>
     </div>
@@ -14,7 +14,8 @@
 <script>
 
     export default {
-        name: "ProfileBox"
+        name: "ProfileBox",
+        emits: ['logout']
     }
 
 </script>

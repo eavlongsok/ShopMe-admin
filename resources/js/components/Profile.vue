@@ -27,6 +27,15 @@
                 </div>
             </div>
 
+            <div class="my-row" v-if="userType === 2">
+                <div class="col-one">
+                    store name:
+                </div>
+                <div class="col-two">
+                    {{user.store_name}}
+                </div>
+            </div>
+
             <div class="my-row">
                 <div class="col-one">
                     name:
@@ -63,7 +72,25 @@
                 </div>
             </div>
 
-            <div class="my-row">
+            <div class="my-row" v-if="userType === 2">
+                <div class="col-one">
+                    verified at:
+                </div>
+                <div class="col-two">
+                    {{user.verified_at}}
+                </div>
+            </div>
+
+            <div class="my-row" v-if="userType === 2">
+                <div class="col-one">
+                    verified by:
+                </div>
+                <div class="col-two">
+                    {{user.verified_by}} (AD{{ user.verifier_ID }})
+                </div>
+            </div>
+
+            <div class="my-row" v-if="userType === 1">
                 <div class="col-one">
                     {{user.addresses.length > 1 ? 'addresses' : 'address'}}:
                 </div>
@@ -76,12 +103,39 @@
                 </div>
             </div>
 
-            <div class="my-row">
+            <div class="my-row" v-if="userType === 2">
+                <div class="col-one">
+                    business address:
+                </div>
+                <div class="col-two">
+                    {{user.business_address}}
+                </div>
+            </div>
+
+            <div class="my-row" v-if="userType === 2">
+                <div class="col-one">
+                    business info:
+                </div>
+                <div class="col-two">
+                    {{user.business_info}}
+                </div>
+            </div>
+
+            <div class="my-row" v-if="userType === 1">
                 <div class="col-one">
                     orders:
                 </div>
                 <div class="col-two">
                     {{user.orders}}
+                </div>
+            </div>
+
+            <div class="my-row" v-if="userType === 2">
+                <div class="col-one">
+                    recent sales:
+                </div>
+                <div class="col-two">
+                    {{user.recent_sales}}
                 </div>
             </div>
         </div>
@@ -91,12 +145,6 @@
 <script>
     export default {
         name: 'Profile',
-        data() {
-            return {
-                buyerFields: ['ID', 'name'],
-                sellerFields: []
-            }
-        },
         props: ['userType', 'user'],
         emits: ['backToMain']
     }

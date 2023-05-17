@@ -1,7 +1,7 @@
 <template>
     <Login v-if="loggedIn === false"/>
     <div class="mt-16" v-else-if="loggedIn === true">
-        <Header :active="active"/>
+        <Header :active="active" @logout="loggedIn = false"/>
         <div class="">
             <Sidebar class="fixed w-1/5 z-[1]" :active="active" @changetab="changeTab"/>
             <div class="w-[79%] ml-[21%] pt-5">

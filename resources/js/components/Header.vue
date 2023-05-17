@@ -6,7 +6,7 @@
         </div>
 
         <div class="ml-auto mr-6">
-            <ProfileBox/>
+            <ProfileBox @logout="$emit('logout')"/>
         </div>
     </div>
 </template>
@@ -21,7 +21,8 @@
             ProfileBox,
             SearchBox
         },
-        props: ['active']
+        props: ['active'],
+        emits: ['logout']
     }
 </script>
 
