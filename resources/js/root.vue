@@ -9,6 +9,8 @@
                 <Verification v-else-if="active === 2"/>
                 <Ban v-else-if="active === 3" />
                 <BannedUsers v-else-if="active === 4" />
+                <RemoveProduct v-else-if="active === 5" />
+                <RemovedProducts v-else-if="active === 6" />
             </div>
         </div>
     </div>
@@ -23,6 +25,8 @@
     import BannedUsers from './components/BannedUsers.vue'
     import Login from './components/Login.vue'
     import Ban from './components/Ban.vue'
+    import RemoveProduct from './components/RemoveProduct.vue'
+import RemovedProducts from './components/RemovedProducts.vue'
 
     export default {
         data() {
@@ -32,15 +36,17 @@
             }
         },
         components: {
-            Sidebar,
-            Header,
-            ProfileBox,
-            Home,
-            Verification,
-            BannedUsers,
-            Login,
-            Ban
-        },
+    Sidebar,
+    Header,
+    ProfileBox,
+    Home,
+    Verification,
+    BannedUsers,
+    Login,
+    Ban,
+    RemoveProduct,
+    RemovedProducts
+},
         methods: {
             changeTab(tabID) {
                 this.active = tabID

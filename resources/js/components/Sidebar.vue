@@ -6,6 +6,8 @@
             <li @click="emitTabEvent(2)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 2}">verification</li>
             <li @click="emitTabEvent(3)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 3}">ban</li>
             <li @click="emitTabEvent(4)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 4}">banned users</li>
+            <li @click="emitTabEvent(5)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 5}">Remove product</li>
+            <li @click="emitTabEvent(6)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 6}">Removed products</li>
         </ul>
     </div>
 </template>
