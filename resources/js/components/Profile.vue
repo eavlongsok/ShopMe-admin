@@ -3,8 +3,8 @@
         <img src="back-arrow.png" width="16" class="inline-block">
         <span class="text-lg align-middle ml-2 underline hover:font-bold">Back</span>
     </div>
-    <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text">
-        <div class="h-72 col-span-2">
+    <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10">
+        <div class="w-full col-span-2">
             <img src="bingchilling.jpeg" class="w-full"/>
             <button class="block bg-red-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-red-800 font-bold text-white mt-5 w-32 ml-auto select-none" @click="$emit('toggleBan')">{{user.banned ? 'Unban' : 'Ban'}}</button>
         </div>

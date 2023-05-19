@@ -5,11 +5,8 @@
     </div>
     <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10">
         <div class="w-full col-span-2">
-            <img src="iphone12.jpg" class="w-full"/>
-            <div class="flex justify-evenly">
-                <button class="rounded-xl text-xl p-2 border-2 border-black font-bold text-white mt-5 w-32 select-none" :class="{'bg-red-600 hover:bg-red-800': product.status === 1, 'bg-green-600 hover:bg-green-700': product.status === 0}" @click="$emit('changeStatus')">{{product.status === 1 ? 'Ban Product' : 'Restore Product'}}</button>
-                <button class="bg-red-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-red-800 font-bold text-white mt-5 w-32 select-none" @click="$emit('backToMain')">Delete Product</button>
-            </div>
+            <img src="bingchilling.jpeg" class="w-full"/>
+            <button class="block bg-green-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-green-700 font-bold text-white mt-5 w-32 ml-auto select-none" @click="approve">Approve</button>
         </div>
         <div class="col-span-3">
             <div class="my-row">
@@ -17,61 +14,70 @@
                     ID:
                 </div>
                 <div class="col-two">
-                    {{ product.id }}
+                    {{seller.ID}}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    Product Name:
+                    store name:
                 </div>
                 <div class="col-two">
-                    {{ product.name }}
+                    {{seller.store_name}}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    Category:
+                    name:
                 </div>
                 <div class="col-two">
-                    {{ product.category }}
+                    {{seller.name}}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    Price:
+                    id card:
                 </div>
                 <div class="col-two">
-                    {{ product.price }}
+                    {{seller.id_card}}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    Seller:
+                    email:
                 </div>
                 <div class="col-two">
-                    {{ product.seller }}
+                    {{seller.email}}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    Amount Sold:
+                    address:
                 </div>
                 <div class="col-two">
-                    {{ product.amount_sold }}
+                    {{seller.address}}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    Date Added:
+                    submission date:
                 </div>
                 <div class="col-two">
-                    {{ product.date_added }}
+                    {{seller.submission_date}}
+                </div>
+            </div>
+
+            <div class="my-row">
+                <div class="col-one">
+                    business info:
+                </div>
+                <div class="col-two">
+                    {{seller.business_info}}
                 </div>
             </div>
         </div>
@@ -80,9 +86,14 @@
 
 <script>
     export default {
-        name: 'Profile',
-        props: ['product'],
-        emits: ['backToMain', 'changeStatus']
+        name: 'VerificationInfo',
+        props: ['seller'],
+        emits: ['backToMain'],
+        methods: {
+            approve() {
+                event.target.innerText = 'Approved'
+            }
+        }
     }
 </script>
 

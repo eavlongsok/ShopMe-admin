@@ -1,7 +1,7 @@
 <template>
     <div v-if="profilePage === false">
         <h2 class="heading-2 mb-3">Ban user</h2>
-        <SearchBox :userType="userType" action="/"/>
+        <SearchBox :userType="userType" action="/" @search="userType === 1? searched_buyer = true : searched_seller = true"/>
         <small class="ml-3 text-sm">Search for user by name or ID</small>
         <br/>
         <div class="ml-3 mt-2">
@@ -10,9 +10,7 @@
             <input type="radio" name="userType" id="seller" value=2/ @click="userType = 2" :checked="userType === 2">
             <label for="seller">Seller</label>
         </div>
-        <SearchResult :userType="userType" />
-
-        <div class="w-full mt-6" v-if="userType === 1 && searched && buyers.length !== 0">
+        <div class="w-full mt-6" v-if="userType === 1 && searched_buyer && buyers.length !== 0">
             <span class="ml-3 text-lg">Search result for: "Eav Long Sok"</span>
             <Table class="w-11/12 mt-3 mb-5" :fields="buyerFields">
                 <tbody>
@@ -28,10 +26,10 @@
             </Table>
         </div>
 
-        <h2 class="text-xl text-center mt-10" v-else-if="userType === 1 && searched && buyers.length === 0">No buyer was found!</h2>
+        <h2 class="text-xl text-center mt-16" v-else-if="userType === 1 && searched_buyer && buyers.length === 0">No buyer was found!</h2>
 
 
-        <div class="w-full mt-6" v-if="userType === 2 && searched && sellers.length !== 0">
+        <div class="w-full mt-6" v-if="userType === 2 && searched_seller && sellers.length !== 0">
             <span class="ml-3 text-lg">Search result for: "Eav Long Sok"</span>
             <Table class="w-11/12 mt-3 mb-5" :fields="sellerFields">
                 <tbody>
@@ -47,7 +45,7 @@
             </Table>
         </div>
 
-        <h2 class="text-xl text-center mt-10" v-else-if="userType === 2 && searched && sellers.length === 0">No seller was found!</h2>
+        <h2 class="text-xl text-center mt-10" v-else-if="userType === 2 && searched_seller && sellers.length === 0">No seller was found!</h2>
     </div>
 
     <Profile v-else-if="profilePage === true" @backToMain="profilePage = false" @toggleBan="toggleBan()" :userType="userType" :user="userType === 1 ? buyer : seller"/>
@@ -56,7 +54,6 @@
 <script>
 import Profile from './Profile.vue';
 import SearchBox from './SearchBox.vue';
-import SearchResult from './SearchResult.vue';
 import Table from './Table.vue';
 
     export default {
@@ -65,7 +62,8 @@ import Table from './Table.vue';
             userType: 1,
             profilePage: false,
 
-            searched: true,
+            searched_buyer: false,
+            searched_seller: false,
 
             // buyers: [],
 
@@ -154,7 +152,7 @@ import Table from './Table.vue';
             }
         }
     },
-    components: { SearchBox, SearchResult, Table, Profile },
+    components: { SearchBox, Table, Profile },
     methods: {
         copyToClipBoard(rowID) {
             var emailID = "email" + rowID

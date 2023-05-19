@@ -4,11 +4,11 @@
 
     <Table class="w-11/12 shadow-xl" :fields="fields">
         <tbody>
-            <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)">
-                <td>1</td>
-                <td>{{seller.store_name}}</td>
-                <td><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ seller.seller_name }}</td>
-                <td ref="email1" @click="copyToClipBoard(1)">{{seller.email}}</td>
+            <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="$emit('infopage')">
+                <td>{{index+1}}</td>
+                <td><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{seller.store_name}}</td>
+                <td>{{ seller.seller_name }}</td>
+                <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{seller.email}}</td>
                 <td>{{ seller.submission_date }}</td>
                 <td class="hover-on-arrow w-24" title="See More Details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
             </tr>
@@ -45,13 +45,14 @@
             },
             copyToClipBoard(rowID) {
                 var emailID = "email" + rowID
-                var emailBox = this.$refs[emailID]
-                var email = emailBox.innerText
+                var emailBox = (this.$refs[emailID])[0]
+                var email = this.sellers[rowID-1].email
                 navigator.clipboard.writeText(email)
-                emailBox.innerText = "Copied!"
+                console.log(emailBox.innerText)
+                this.sellers[rowID-1].email = "Copied!"
                 setTimeout(() => {
-                    emailBox.innerText = email
-                }, 170)
+                    this.sellers[rowID-1].email = email
+                }, 200)
             },
             displayArrow(arrowName, rowID) {
                 var arrowID = arrowName + rowID
@@ -65,7 +66,7 @@
                 arrow.style.opacity = 0;
             }
         },
-        emits: ['verifytab']
+        emits: ['verifytab', 'infopage']
     }
 </script>
 

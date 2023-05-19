@@ -1,6 +1,6 @@
 <template>
     <DashBoard/>
-    <VerificationSummary @verifytab="emitTabEvent"/>
+    <VerificationSummary @verifytab="emitTabEvent" @infopage="$emit('infopage')"/>
 </template>
 
 <script>
