@@ -82,7 +82,7 @@
                         {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 5'},
                     ],
                     orders: 'some orders',
-                    banned: false
+                    banned: true
                 },
                 seller: {
                     ID: 2022,
@@ -120,7 +120,7 @@
                             discount_percentage: 0
                         }
                     ],
-                    banned: false
+                    banned: true
                 }
             }
         },

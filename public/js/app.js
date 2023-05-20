@@ -19555,7 +19555,7 @@ __webpack_require__.r(__webpack_exports__);
           description: 'My address number 5'
         }],
         orders: 'some orders',
-        banned: false
+        banned: true
       },
       seller: {
         ID: 2022,
@@ -19596,7 +19596,7 @@ __webpack_require__.r(__webpack_exports__);
           total_price: 50,
           discount_percentage: 0
         }],
-        banned: false
+        banned: true
       }
     };
   },
@@ -20802,7 +20802,15 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           onMouseleave: function onMouseleave($event) {
             return $options.hideArrow('arrow--', index + 1);
           }
-        }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(index + 1), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(seller.store_name), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(seller.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+        }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(index + 1), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+          onClick: _cache[5] || (_cache[5] = function ($event) {
+            return $data.profilePage = true;
+          })
+        }, [_hoisted_19, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(seller.store_name), 1 /* TEXT */)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
+          onClick: _cache[6] || (_cache[6] = function ($event) {
+            return $data.profilePage = true;
+          })
+        }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(seller.name), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
           ref_for: true,
           ref: 'email' + (index + 1),
           onClick: function onClick($event) {
@@ -20811,7 +20819,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(seller.email), 9 /* TEXT, PROPS */, _hoisted_20), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(seller.created_at), 1 /* TEXT */), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", {
           "class": "hover-on-arrow w-24",
           title: "See More Details",
-          onClick: _cache[5] || (_cache[5] = function ($event) {
+          onClick: _cache[7] || (_cache[7] = function ($event) {
             return $data.profilePage = true;
           })
         }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("img", {
@@ -20827,10 +20835,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1 /* STABLE */
   }, 8 /* PROPS */, ["fields"])])) : $data.userType === 2 && $data.searched_seller && $data.sellers.length === 0 ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("h2", _hoisted_21, "No seller was found!")) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])) : $data.profilePage === true ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_Profile, {
     key: 1,
-    onBackToMain: _cache[6] || (_cache[6] = function ($event) {
+    onBackToMain: _cache[8] || (_cache[8] = function ($event) {
       return $data.profilePage = false;
     }),
-    onToggleBan: _cache[7] || (_cache[7] = function ($event) {
+    onToggleBan: _cache[9] || (_cache[9] = function ($event) {
       return $options.toggleBan();
     }),
     userType: $data.userType,
@@ -21027,7 +21035,7 @@ var _hoisted_1 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
   "class": "heading-2 mb-3"
 }, "Dashboard", -1 /* HOISTED */);
 var _hoisted_2 = {
-  "class": "flex flex-row justify-evenly flex-wrap gap-5"
+  "class": "flex flex-row justify-evenly flex-wrap gap-5 capitalize"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_Card = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("Card");
@@ -22402,7 +22410,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $options.emitTabEvent(2);
     })
   }, "View All"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_Table, {
-    "class": "w-11/12 shadow-xl",
+    "class": "w-11/12",
     fields: $data.fields
   }, {
     "default": (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(function () {
