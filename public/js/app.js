@@ -19673,14 +19673,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _ProfileBox_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ProfileBox.vue */ "./resources/js/components/ProfileBox.vue");
-/* harmony import */ var _SearchBox_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SearchBox.vue */ "./resources/js/components/SearchBox.vue");
-
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Header',
   components: {
-    ProfileBox: _ProfileBox_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    SearchBox: _SearchBox_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+    ProfileBox: _ProfileBox_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   props: ['active'],
   emits: ['logout']

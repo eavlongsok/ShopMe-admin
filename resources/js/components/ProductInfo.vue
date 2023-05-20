@@ -74,6 +74,7 @@
                     {{ product.date_added }}
                 </div>
             </div>
+
         </div>
     </div>
 </template>

@@ -13,13 +13,11 @@
 
 <script>
     import ProfileBox from './ProfileBox.vue'
-    import SearchBox from './SearchBox.vue';
 
     export default {
         name: 'Header',
         components: {
             ProfileBox,
-            SearchBox
         },
         props: ['active'],
         emits: ['logout']
