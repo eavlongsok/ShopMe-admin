@@ -20,7 +20,6 @@
             ProfileBox,
         },
         props: ['active'],
-        emits: ['logout']
     }
 </script>
 

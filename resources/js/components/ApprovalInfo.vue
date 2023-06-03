@@ -5,8 +5,7 @@
     </div>
     <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10">
         <div class="w-full col-span-2">
-            <img src="bingchilling.jpeg" class="w-full"/>
-            <button class="block bg-green-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-green-700 font-bold text-white mt-5 w-32 ml-auto select-none" @click="approve">Approve</button>
+            <img src="iphone12.jpg" class="w-full"/>
         </div>
         <div class="col-span-3">
             <div class="my-row">
@@ -14,86 +13,109 @@
                     ID:
                 </div>
                 <div class="col-two">
-                    {{seller.ID}}
+                    {{ product.id }}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    store name:
+                    Product Name:
                 </div>
                 <div class="col-two">
-                    {{seller.store_name}}
+                    {{ product.name }}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    name:
+                    Category:
                 </div>
                 <div class="col-two">
-                    {{seller.name}}
+                    {{ product.category }}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    id card:
+                    Price:
                 </div>
                 <div class="col-two">
-                    {{seller.id_card}}
+                    {{ product.price }}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    email:
+                    Quantity:
                 </div>
                 <div class="col-two">
-                    {{seller.email}}
+                    {{ product.quantity }}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    address:
+                    Seller:
                 </div>
                 <div class="col-two">
-                    {{seller.address}}
+                    {{ product.seller }}
                 </div>
             </div>
 
             <div class="my-row">
                 <div class="col-one">
-                    submission date:
+                    Description:
                 </div>
                 <div class="col-two">
-                    {{seller.submission_date}}
+                    {{ product.description }}
                 </div>
             </div>
 
-            <div class="my-row">
+            <div class="my-row" v-if="product.hasOwnProperty('approved_at')">
                 <div class="col-one">
-                    business info:
+                    Date Approved:
                 </div>
                 <div class="col-two">
-                    {{seller.business_info}}
+                    {{ product.approved_at }}
                 </div>
             </div>
+
+            <div class="my-row" v-if="product.hasOwnProperty('approved_by')">
+                <div class="col-one">
+                    Approved By:
+                </div>
+                <div class="col-two">
+                    {{ product.approved_by }}
+                </div>
+            </div>
+
+            <div class="my-row" v-if="product.hasOwnProperty('delivered_at')">
+                <div class="col-one">
+                    Time Delivered:
+                </div>
+                <div class="col-two">
+                    {{ product.delivered_at }}
+                </div>
+            </div>
+
+            <div class="my-row" v-if="product.hasOwnProperty('delivered_by')">
+                <div class="col-one">
+                    Delivered By:
+                </div>
+                <div class="col-two">
+                    {{ product.delivered_by }}
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: 'VerificationInfo',
-        props: ['seller'],
-        emits: ['backToMain'],
-        methods: {
-            approve() {
-                event.target.innerText = 'Approved'
-            }
-        }
+        name: 'ApprovalInfo',
+        props: ['product'],
+        emits: ['backToMain']
     }
 </script>
 

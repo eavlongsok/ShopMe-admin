@@ -1,8 +1,7 @@
 <template>
-    <Login v-if="loggedIn === false"/>
-    <div class="mt-16" v-else-if="loggedIn === true">
-        <Header :active="active" @logout="loggedIn = false"/>
-        <div class="">
+    <div class="mt-16">
+        <Header :active="active" @logout="handleLogOut"/>
+        <div>
             <Sidebar class="fixed w-1/5 z-[1]" :active="active" @changetab="changeTab"/>
             <div class="w-[79%] ml-[21%] pt-5">
                 <Home v-if="active === 1" @verifytab="changeTab" @infopage="changeTab(2); verifyInfoPage = true"/>
@@ -34,8 +33,8 @@
         data() {
             return {
                 active: 1,
-                loggedIn: true,
-                verifyInfoPage: true
+                verifyInfoPage: true,
+                session_id: null,
             }
         },
         components: {
@@ -56,7 +55,29 @@
             changeTab(tabID) {
                 this.active = tabID
                 window.scrollTo(0,0)
-            }
+            },
+
+            getCookie(name) {
+                var dc = document.cookie;
+                var prefix = name + "=";
+                var begin = dc.indexOf("; " + prefix);
+                if (begin == -1) {
+                    begin = dc.indexOf(prefix);
+                    if (begin != 0) return null;
+                }
+                else
+                {
+                    begin += 2;
+                    var end = document.cookie.indexOf(";", begin);
+                    if (end == -1) {
+                    end = dc.length;
+                    }
+                }
+                return decodeURI(dc.substring(begin + prefix.length, end));
+            },
+        },
+        mounted() {
+            console.log(this.getCookie('XSRF-TOKEN'))
         }
     }
 </script>

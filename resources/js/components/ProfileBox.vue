@@ -5,7 +5,11 @@
         <div class="dropdown-menu rounded-lg">
             <ul>
                 <li class="dropdown-item hover:bg-gray-300">profile</li>
-                <li class="dropdown-item bg-red-600 text-white hover:bg-red-800" @click="$emit('logout')">log out</li>
+                <form ref="form" action="log-out" method="post">
+                    <input type="hidden" name="_token" :value="csrf"/>
+                    <li class="dropdown-item bg-red-600 text-white hover:bg-red-800" @click="$refs.form.submit()">log out</li>
+                </form>
+
             </ul>
         </div>
     </div>
@@ -15,7 +19,11 @@
 
     export default {
         name: "ProfileBox",
-        emits: ['logout']
+        data() {
+            return {
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        }
     }
 
 </script>

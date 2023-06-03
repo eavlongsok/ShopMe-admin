@@ -1,5 +1,5 @@
 <template>
-    <div class="cursor-pointer" @click="$emit('backToMain')">
+    <div class="cursor-pointer fixed" @click="$emit('backToMain')">
         <img src="back-arrow.png" width="16" class="inline-block">
         <span class="text-lg align-middle ml-2 underline hover:font-bold">Back</span>
     </div>
