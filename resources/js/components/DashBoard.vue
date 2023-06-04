@@ -1,6 +1,6 @@
 <template>
     <h2 class="heading-2 mb-3">Dashboard</h2>
-    <div class="grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-evenly gap-5 capitalize">
+    <div class="grid lg:grid-cols-3 xl:grid-cols-4 xxl:grid-cols-5 flex-wrap justify-evenly gap-5 capitalize">
         <Card title="title 1" value="10" color="red" />
         <Card title="title 2" value="20" color="blue" />
         <Card title="title 3" value="30" color="magenta" />

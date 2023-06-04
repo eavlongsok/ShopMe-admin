@@ -4,7 +4,7 @@
             <img src="logo-blue.svg" class="mx-auto" />
             <div class="h-[28rem] w-full shadow-lg border-2 border-gray-200">
                 <h1 class="text-center text-4xl mt-5 font-bold">Sign In</h1>
-                <form @submit="handleSubmit" action="log-in" class="text-lg mt-5 w-5/6 mx-auto" method="post">
+                <div class="text-lg mt-5 w-5/6 mx-auto">
                     <input type="hidden" name="_token" :value="csrf"/>
                     <label for="email" class="block my-1">Enter your email:</label>
 
@@ -27,12 +27,12 @@
                     <br/>
 
                     <div class="text-md">
-                        <input name='remember' type="checkbox" class="mt-4 scale-150" value=1 />
+                        <input name='remember' type="checkbox" class="mt-4 scale-150" @change="remember = !remember" value=1 />
                         <label for='remember' class="ml-3">Remember me</label>
                     </div>
 
-                    <button type="submit" class="border-2 border-gray-500 w-full rounded-md block bg-blue-500 text-white leading-loose text-xl mt-5 hover:bg-blue-600">Sign in</button>
-                </form>
+                    <button @click="handleSubmit" class="border-2 border-gray-500 w-full rounded-md block bg-blue-500 text-white leading-loose text-xl mt-5 hover:bg-blue-600">Sign in</button>
+                </div>
             </div>
         </div>
     </div>
@@ -45,8 +45,10 @@
             return {
                 email: '',
                 password: '',
+                remember: false,
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                errors: null
+                errors: null,
+                credentialError: null
             }
         },
         methods: {
@@ -63,25 +65,28 @@
                     textBox.innerText = 'Show password'
                 }
             },
-            handleSubmit(event) {
-                event.preventDefault()
-                setTimeout(
-                    axios.post('/validate-credentials', {email: this.email, password: this.password}).then(
-                        response => {
-                            console.log(response)
-                        }
-                        // if valid, laravel will not recognize the fails() method, and will return code 500, with specific message, to see if the credentials is valid, we only need to check the response code and message
-                    )
-                        .catch(error => {
-                            console.log('hi')
-                            console.log(error.response)
-                            if (error.response.status === 422)
-                                this.errors = error.response.data.errors
-                            else if (error.response.status === 500 && error.response.data.message === 'Method Illuminate\\Http\\Request::fails does not exist.')
-                                window.location.href = '/'
-                        })
-                , 500)
-            }
+            async handleSubmit() {
+                try {
+                    const req = await axios.post('/log-in', {email: this.email, password: this.password, remember: this.remember})
+
+                    if (req.data?.success) {
+                        window.location.href = '/'
+                    }
+                }
+                catch (err) {
+                    if (err.response.status === 422) {
+                        this.errors = err.response.data.errors
+                    }
+                    else if (err.response.status === 401) {
+                        this.credentialErrors = err.response.data.errors
+                        console.log(this.credentialErrors)
+                    }
+                    else {
+                        this.errors = 'Something went wrong. Please try again later.'
+                    }
+
+                }
+            },
         },
         mounted() {
             this.$refs.email.focus()
