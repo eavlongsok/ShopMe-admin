@@ -50,6 +50,11 @@ return [
         'admin' => [
             'driver' => 'session',
             'provider' => 'admin',
+        ],
+
+        'admin_token' => [
+            'driver' => 'token',
+            'provider' => 'admin',
         ]
     ],
 

@@ -8,9 +8,10 @@
                 <Verification v-else-if="active === 2" :verifyInfoPage="verifyInfoPage"/>
                 <Ban v-else-if="active === 3" />
                 <BannedUsers v-else-if="active === 4" />
-                <ProductManagement v-else-if="active === 5" />
-                <RemovedProducts v-else-if="active === 6" />
-                <ProductApproval v-else-if="active === 7" />
+                <Approve v-else-if="active === 5" />
+                <ProductApproval v-else-if="active === 6" />
+                <ProductManagement v-else-if="active === 7" />
+                <RemovedProducts v-else-if="active === 8" />
             </div>
         </div>
     </div>
@@ -28,6 +29,7 @@
     import RemovedProducts from './components/RemovedProducts.vue'
     import ProductManagement from './components/ProductManagement.vue'
     import ProductApproval from './components/ProductApproval.vue'
+import Approve from './components/Approve.vue'
 
     export default {
         data() {
@@ -38,19 +40,20 @@
             }
         },
         components: {
-            Sidebar,
-            Header,
-            ProfileBox,
-            Home,
-            Verification,
-            BannedUsers,
-            Login,
-            Ban,
-            ProductManagement,
-            RemovedProducts,
-            ProductManagement,
-            ProductApproval
-        },
+    Sidebar,
+    Header,
+    ProfileBox,
+    Home,
+    Verification,
+    BannedUsers,
+    Login,
+    Ban,
+    ProductManagement,
+    RemovedProducts,
+    ProductManagement,
+    ProductApproval,
+    Approve
+},
         methods: {
             changeTab(tabID) {
                 this.active = tabID

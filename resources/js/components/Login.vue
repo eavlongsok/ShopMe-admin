@@ -6,17 +6,25 @@
                 <h1 class="text-center text-4xl mt-5 font-bold">Sign In</h1>
                 <div class="text-lg mt-5 w-5/6 mx-auto">
                     <input type="hidden" name="_token" :value="csrf"/>
-                    <label for="email" class="block my-1">Enter your email:</label>
+                    <label for="username" class="block my-1">Enter your username:</label>
 
-                    <input ref="email" type="email" v-model="email" name="email" class="input-box"/>
+                    <input ref="username" @keyup="($event) => {
+                        if ($event.key === 'Enter') {
+                            goToPassword()
+                        }
+                    }" type="text" v-model="username" name="username" class="input-box"/>
 
-                    <div v-if="errors !== null && errors.hasOwnProperty('email')" class="text-red-600 text-sm">
-                        <span>{{ errors.email[0] }}</span>
+                    <div v-if="errors !== null && errors.hasOwnProperty('username')" class="text-red-600 text-sm">
+                        <span>{{ errors.usermame[0] }}</span>
                     </div>
 
                     <label for="password" class="block my-1 mt-4" name="password">Enter your password:</label>
 
-                    <input ref="password" type="password" v-model="password" name="password" class="input-box"/>
+                    <input ref="password" type="password" @keyup="($event) => {
+                        if ($event.key === 'Enter') {
+                            submit()
+                        }
+                    }" v-model="password" name="password" class="input-box"/>
 
                     <div v-if="errors !== null && errors.hasOwnProperty('password')" class="text-red-600 text-sm">
                         <span>{{ errors.password[0] }}</span>
@@ -31,7 +39,7 @@
                         <label for='remember' class="ml-3">Remember me</label>
                     </div>
 
-                    <button @click="handleSubmit" class="border-2 border-gray-500 w-full rounded-md block bg-blue-500 text-white leading-loose text-xl mt-5 hover:bg-blue-600">Sign in</button>
+                    <button @click="handleSubmit" ref="button" class="border-2 border-gray-500 w-full rounded-md block bg-blue-500 text-white leading-loose text-xl mt-5 hover:bg-blue-600">Sign in</button>
                 </div>
             </div>
         </div>
@@ -43,7 +51,7 @@
         name: 'Login',
         data() {
             return {
-                email: '',
+                username: '',
                 password: '',
                 remember: false,
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -52,6 +60,12 @@
             }
         },
         methods: {
+            goToPassword() {
+                this.$refs.password.focus();
+            },
+            submit() {
+                this.$refs.button.click();
+            },
             showPassword() {
                 let target = this.$refs.password
                 let textBox = this.$refs.toggle
@@ -67,13 +81,16 @@
             },
             async handleSubmit() {
                 try {
-                    const req = await axios.post('/log-in', {email: this.email, password: this.password, remember: this.remember})
+                    const req = await axios.post('/log-in', {username: this.username, password: this.password, remember: this.remember})
 
                     if (req.data?.success) {
+                        const token = req.data.token
+                        localStorage.setItem('token', token)
                         window.location.href = '/'
                     }
                 }
                 catch (err) {
+                    console.log(err.response.data)
                     if (err.response.status === 422) {
                         this.errors = err.response.data.errors
                     }
@@ -89,7 +106,7 @@
             },
         },
         mounted() {
-            this.$refs.email.focus()
+            this.$refs.username.focus()
         }
     }
 </script>

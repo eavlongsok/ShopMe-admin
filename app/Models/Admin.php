@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
 
 class Admin extends Model implements Authenticatable
 {
+    use HasApiTokens;
     protected $table = 'admin';
     protected $primaryKey = 'admin_id';
 

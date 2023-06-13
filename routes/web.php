@@ -24,5 +24,3 @@ Route::get('/login', function () {
 });
 
 Route::post('/log-out', [AuthController::class, 'logOut']);
-
-Route::post('/validate-credentials', [AuthController::class, 'validateCredentials']);
