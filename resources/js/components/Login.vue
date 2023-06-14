@@ -85,7 +85,7 @@
 
                     if (req.data?.success) {
                         const token = req.data.token
-                        localStorage.setItem('token', token)
+                        localStorage.setItem('admin_token', token)
                         window.location.href = '/'
                     }
                 }

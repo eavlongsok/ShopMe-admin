@@ -49,7 +49,7 @@
         async mounted() {
             const response = await axios.get('/api/listingRequests/?offset=0&limit=10', {
                 headers: {
-                    "Authorization": "Bearer " + localStorage.getItem('token')
+                    "Authorization": "Bearer " + localStorage.getItem('admin_token')
                 }
             })
             this.products = response.data

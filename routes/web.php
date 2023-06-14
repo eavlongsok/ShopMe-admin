@@ -15,12 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [AuthController::class, 'homePage']);
+Route::get('/', [AuthController::class, 'homePage'])->middleware('checkMainPage');
 
-Route::post('/log-in', [AuthController::class, 'logIn']);
+Route::post('/log-in', [AuthController::class, 'logIn'])->middleware('checkLogin');
 
 Route::get('/login', function () {
     return view('login');
-});
+})->middleware('checkLogin');
 
-Route::post('/log-out', [AuthController::class, 'logOut']);
+Route::post('/log-out', [AuthController::class, 'logOut'])->middleware('checkMainPage');

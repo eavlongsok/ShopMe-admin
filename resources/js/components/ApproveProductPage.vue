@@ -121,7 +121,7 @@
                 try {
                     const response = await axios.get("/api/approveProduct/?id="+id, {
                         headers: {
-                            "Authorization": "Bearer " + localStorage.getItem("token")
+                            "Authorization": "Bearer " + localStorage.getItem("admin_token")
                         }
                     })
                     if (response.status == 200) {

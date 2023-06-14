@@ -1,5 +1,5 @@
 <template>
-    <div class="cursor-pointer fixed" @click="$emit('backToMain')">
+    <div class="cursor-pointer" @click="$emit('backToMain')">
         <img src="back-arrow.png" width="16" class="inline-block">
         <span class="text-lg align-middle ml-2 underline hover:font-bold">Back</span>
     </div>
@@ -14,7 +14,7 @@
                     ID:
                 </div>
                 <div class="col-two">
-                    {{user.ID}}
+                    {{userType === 1 ? user.buyer_id : user.seller_id}}
                 </div>
             </div>
 
@@ -23,7 +23,7 @@
                     Status:
                 </div>
                 <div class="col-two">
-                    {{user.banned ? 'Banned' : 'Active'}}
+                    {{user.status === 0 ? 'Banned' : 'Active'}}
                 </div>
             </div>
 
@@ -41,7 +41,7 @@
                     name:
                 </div>
                 <div class="col-two">
-                    {{user.name}}
+                    {{user.first_name}} {{user.last_name}}
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
                     date of birth:
                 </div>
                 <div class="col-two">
-                    {{user.dob}}
+                    {{user.date_of_birth}}
                 </div>
             </div>
 
@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-            <div class="my-row" v-if="userType === 1">
+            <!-- <div class="my-row" v-if="userType === 1">
                 <div class="col-one">
                     {{user.addresses.length > 1 ? 'addresses' : 'address'}}:
                 </div>
@@ -101,7 +101,7 @@
                         <li v-for="address in user.addresses">{{ address }}</li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
 
             <div class="my-row" v-if="userType === 2">
                 <div class="col-one">
@@ -146,7 +146,7 @@
     export default {
         name: 'Profile',
         props: ['userType', 'user'],
-        emits: ['backToMain']
+        emits: ['backToMain'],
     }
 </script>
 

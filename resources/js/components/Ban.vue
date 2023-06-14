@@ -5,18 +5,18 @@
         <small class="ml-3 text-sm">Search for user by name or ID</small>
         <br/>
         <div class="ml-3 mt-2">
-            <input type="radio" name="userType" id="buyer" value=1 @click="userType = 1" :checked="userType === 1"/>
+            <input type="radio" name="userType" id="buyer" value=1 @click="userType = 1; fetchData()" :checked="userType === 1"/>
             <label for="buyer" class="mr-4">Buyer</label>
-            <input type="radio" name="userType" id="seller" value=2/ @click="userType = 2" :checked="userType === 2">
+            <input type="radio" name="userType" id="seller" value=2/ @click="userType = 2; fetchData()" :checked="userType === 2">
             <label for="seller">Seller</label>
         </div>
         <div class="w-full mt-6" v-if="userType === 1 && searched_buyer && buyers.length !== 0">
             <span class="ml-3 text-lg">Search result for: "Eav Long Sok"</span>
             <Table class="w-11/12 mt-3 mb-5" :fields="buyerFields">
                 <tbody>
-                    <tr v-for="(buyer, index) in buyers" @mouseover="displayArrow('arrow-', index+1)" @mouseleave="hideArrow('arrow-', index+1)">
+                    <tr v-for="(buyer, index) in buyers" @mouseover="displayArrow('arrow-', index+1)" @mouseleave="hideArrow('arrow-', index+1) " @click="_buyer = buyer">
                         <td>{{ index + 1 }}</td>
-                        <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ buyer.name }}</td>
+                        <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ buyer.first_name }} {{ buyer.last_name }}</td>
                         <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{ buyer.email }}</td>
                         <td>{{ buyer.created_at }}</td>
                         <!-- <td><button class="bg-green-800 rounded-xl p-2 border-2 border-black hover:bg-green-900 py-0" @click="profilePage = true">Show</button></td> -->
@@ -33,10 +33,10 @@
             <span class="ml-3 text-lg">Search result for: "Eav Long Sok"</span>
             <Table class="w-11/12 mt-3 mb-5" :fields="sellerFields">
                 <tbody>
-                    <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow--', index+1)" @mouseleave="hideArrow('arrow--', index+1)">
+                    <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow--', index+1)" @mouseleave="hideArrow('arrow--', index+1)" @click="_seller = seller">
                         <td>{{ index + 1 }}</td>
                         <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ seller.store_name }}</td>
-                        <td @click="profilePage = true">{{ seller.name }}</td>
+                        <td @click="profilePage = true">{{ seller.first_name }} {{ seller.last_name}}</td>
                         <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{ seller.email }}</td>
                         <td>{{ seller.created_at }}</td>
                         <td class="hover-on-arrow w-24" title="See More Details" @click="profilePage = true"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow--' + (index + 1)"/></td>
@@ -48,7 +48,7 @@
         <h2 class="text-xl text-center mt-10" v-else-if="userType === 2 && searched_seller && sellers.length === 0">No seller was found!</h2>
     </div>
 
-    <Profile v-else-if="profilePage === true" @backToMain="profilePage = false" @toggleBan="toggleBan()" :userType="userType" :user="userType === 1 ? buyer : seller"/>
+    <Profile v-else-if="profilePage === true" @backToMain="profilePage = false" @toggleBan="toggleBan()" :userType="userType" :user="userType === 1 ? _buyer : _seller"/>
 </template>
 
 <script>
@@ -67,89 +67,16 @@ import Table from './Table.vue';
 
             // buyers: [],
 
-            buyers: [
-                {name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', created_at: '27/10/2020'},
-                {name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', created_at: '27/10/2020'},
-                {name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', created_at: '27/10/2020'},
-                {name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', created_at: '27/10/2020'},
-                {name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', created_at: '27/10/2020'},
-                {name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', created_at: '27/10/2020'},
-                {name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', created_at: '27/10/2020'},
-                {name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', created_at: '27/10/2020'}
-            ],
+            buyers: [],
 
             // sellers: [],
 
-            sellers: [
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-                {store_name: 'ShopMe', name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh',         created_at: '27/10/2020'},
-            ],
+            sellers: [],
 
             buyerFields: ['No.', 'Buyer\'s Name', "Email", 'Created At', ' '],
             sellerFields: ['No.', 'Store Name', "Seller's Name", 'Email', 'Created At', ' '],
-            buyer:
-            {
-                ID: 2022,
-                name: 'Eav Long Sok',
-                email: 'esok@paragoniu.edu.kh',
-                dob: '01/01/2000',
-                created_at: '27/10/2020',
-                addresses: [
-                    {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 1'},
-                    {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 2'},
-                    {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 3'},
-                    {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 4'},
-                    {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 5'},
-                ],
-                orders: 'some orders',
-                banned: false
-            },
-            seller: {
-                ID: 2022,
-                store_name: 'ShopMe',
-                name: 'Eav Long Sok',
-                email: 'esok@paragoniu.edu.kh',
-                dob: '01/01/2000',
-                created_at: '27/10/2020',
-                verified_at: '07/11/2022',
-                verified_by: 'Yi Long Ma',
-                verifier_ID: 2202,
-                business_address: {user_id: 2022, region_id: 1, street_number: 101, house_number: 202},
-                business_info: {info: 'some information'},
-                description: 'My address description',
-                recent_sales: [
-                    {
-                        product_id: 10,
-                        product_name: 'Phone case',
-                        quantity: 5,
-                        total_price: 50,
-                        discount_percentage: 0
-                    },
-                    {
-                        product_id: 10,
-                        product_name: 'Phone case',
-                        quantity: 5,
-                        total_price: 50,
-                        discount_percentage: 0
-                    },
-                    {
-                        product_id: 10,
-                        product_name: 'Phone case',
-                        quantity: 5,
-                        total_price: 50,
-                        discount_percentage: 0
-                    }
-                ],
-                banned: false
-            }
+            _buyer: {},
+            _seller: {},
         }
     },
     components: { SearchBox, Table, Profile },
@@ -181,7 +108,37 @@ import Table from './Table.vue';
             var arrowID = arrowName + rowID
             var arrow = (this.$refs[arrowID])[0]
             arrow.style.opacity = 0;
+        },
+        async fetchData() {
+            try {
+                let params = new URLSearchParams();
+                params.append('userType', this.userType);
+                params.append('limit', 30);
+                params.append('offset', 0);
+                const response = await axios.get('/api/users', {
+                    params: params,
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('admin_token'),
+                    }
+                });
+
+
+                console.log(response.data)
+
+                if (this.userType === 1) {
+                    this.buyers = response.data
+                }
+                else {
+                    this.sellers = response.data
+                }
+            }
+            catch (err) {
+                console.log(err.response.data)
+            }
         }
+    },
+    async mounted() {
+        const response = await this.fetchData()
     }
 }
 </script>

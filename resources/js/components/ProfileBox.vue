@@ -7,7 +7,7 @@
                 <li class="dropdown-item hover:bg-gray-300">profile</li>
                 <form ref="form" action="log-out" method="post">
                     <input type="hidden" name="_token" :value="csrf"/>
-                    <li class="dropdown-item bg-red-600 text-white hover:bg-red-800" @click="$refs.form.submit()">log out</li>
+                    <li class="dropdown-item bg-red-600 text-white hover:bg-red-800" @click="submit()">log out</li>
                 </form>
 
             </ul>
@@ -22,6 +22,12 @@
         data() {
             return {
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        },
+        methods: {
+            submit() {
+                this.$refs.form.submit();
+                localStorage.removeItem('admin_token')
             }
         }
     }
