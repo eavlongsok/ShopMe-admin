@@ -80,7 +80,7 @@ import Approve from './components/Approve.vue'
             },
         },
         mounted() {
-            console.log(this.getCookie('XSRF-TOKEN'))
+            // console.log(this.getCookie('XSRF-TOKEN'))
         }
     }
 </script>

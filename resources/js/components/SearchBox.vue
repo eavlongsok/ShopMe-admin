@@ -1,17 +1,27 @@
 <template>
-    <form class="pl-2 ml-1" @submit="e => {
-        e.preventDefault();
-        $emit('search');
-    }">
-            <input type="text" name="query" class="h-9 w-72 focus:outline-none rounded focus:bg-gray-100 placeholder-gray-900 search" placeholder="Search"/>
-            <button type="submit" class="bg-green-500 ml-5 w-20 h-10 text-md tracking-wide rounded-2xl text-gray-800 hover:bg-green-600 hover:text-gray-900 font-semibold" @click="$emit('search')">Search</button>
-    </form>
+    <input v-if="userType == 1" v-model="queryForBuyer" type="text" name="query" class="h-9 w-72 focus:outline-none rounded focus:bg-gray-100 placeholder-gray-900 search" placeholder="Search" @keypress="$event => {
+        if ($event.key == 'Enter') {
+            $refs.searchbtn.click();
+        }}
+    "/>
+    <input v-if="userType == 2" v-model="queryForSeller" type="text" name="query" class="h-9 w-72 focus:outline-none rounded focus:bg-gray-100 placeholder-gray-900 search" placeholder="Search" @keypress="$event => {
+        if ($event.key == 'Enter') {
+            $refs.searchbtn.click();
+        }}
+    "/>
+    <button ref="searchbtn" class="bg-green-500 ml-5 w-20 h-10 text-md tracking-wide rounded-2xl text-gray-800 hover:bg-green-600 hover:text-gray-900 font-semibold" @click="userType == 1 ? $emit('search', queryForBuyer) : $emit('search', queryForSeller)">Search</button>
 </template>
 
 <script>
     export default {
+        data() {
+            return {
+                queryForBuyer: '',
+                queryForSeller: ''
+            }
+        },
+        props: ['userType'],
         name: 'SearchBox',
-        props: ['action', 'userType'],
         emits: ['search']
     }
 </script>

@@ -6,7 +6,7 @@
     <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10">
         <div class="w-full col-span-2">
             <img src="bingchilling.jpeg" class="w-full"/>
-            <button class="block bg-red-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-red-800 font-bold text-white mt-5 w-32 ml-auto select-none" @click="$emit('toggleBan')">{{user.banned ? 'Unban' : 'Ban'}}</button>
+            <button class="block bg-red-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-red-800 font-bold text-white mt-5 w-32 ml-auto select-none" @click="handleClick">{{user.status == 1 ? 'Ban' : 'Unban'}}</button>
         </div>
         <div class="col-span-3">
             <div class="my-row">
@@ -146,7 +146,52 @@
     export default {
         name: 'Profile',
         props: ['userType', 'user'],
-        emits: ['backToMain'],
+        emits: ['backToMain', 'toggleBan'],
+        methods: {
+            async ban() {
+                const route = "api/ban/" + (this.userType == 1 ? 'buyer' : 'seller')
+                const params = new URLSearchParams();
+                params.append('id', (this.userType == 1 ? this.user.buyer_id : this.user.seller_id));
+
+                try {
+                    const response = await axios.get(route, {
+                        params: params,
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('admin_token'),
+                        }
+                    });
+                    this.user.status = 0;
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            },
+            async unban() {
+                const route = "api/unban/" + (this.userType == 1 ? 'buyer' : 'seller')
+                const params = new URLSearchParams();
+                params.append('id', (this.userType == 1 ? this.user.buyer_id : this.user.seller_id));
+
+                try {
+                    const response = await axios.get(route, {
+                        params: params,
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('admin_token'),
+                        }
+                    });
+                    this.user.status = 1;
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            },
+            handleClick() {
+                if (this.user.status == 1) this.ban(); else this.unban();
+                this.$emit('toggleBan', this.userType, this.userType === 1 ? this.user.buyer_id : this.user.seller_id);
+            }
+        },
+        // mounted() {
+        //     console.log(this.user);
+        // }
     }
 </script>
 

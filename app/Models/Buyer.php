@@ -10,7 +10,7 @@ use Laravel\Scout\Searchable;
 
 class Buyer extends Model implements Authenticatable
 {
-    use HasApiTokens, Searchable;
+    use HasApiTokens, Searchable, HasFactory;
     protected $table = 'buyer';
     protected $primaryKey = 'buyer_id';
 
@@ -55,5 +55,4 @@ class Buyer extends Model implements Authenticatable
             'status' => $this->status
         ];
     }
-    use HasFactory;
 }
