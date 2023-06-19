@@ -7,7 +7,7 @@
         </div>
             <Table v-if="userType === 1 && buyers.length != 0" :fields="buyerFields" class="w-11/12 mt-10">
                 <tbody>
-                    <tr v-for="(buyer, index) in buyers" @mouseover="displayArrow('arrow-', index+1)" @mouseleave="hideArrow('arrow-', index+1)" @click="profilePage = true">
+                    <tr v-for="(buyer, index) in buyers" @mouseover="displayArrow('arrow-', index+1)" @mouseleave="hideArrow('arrow-', index+1)" @click="_buyer = buyer; profilePage = true">
                         <td>{{ index + 1 }}</td>
                         <td><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ buyer.first_name }} {{ buyer.last_name }}</td>
                         <td>{{ buyer.created_at }}</td>
@@ -25,12 +25,12 @@
 
             <Table v-if="userType === 2 && sellers.length != 0" :fields="sellerFields" class="w-11/12 mt-10">
                 <tbody>
-                    <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow--', index+1)" @mouseleave="hideArrow('arrow--', index+1)" @click="profilePage = true">
+                    <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow--', index+1)" @mouseleave="hideArrow('arrow--', index+1)" @click="_seller = seller; profilePage = true">
                         <td>{{ index + 1 }}</td>
-                        <td><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ buyer.name }}</td>
-                        <td>{{ seller.name }}</td>
-                        <td>{{ seller.registration_date }}</td>
-                        <td>{{ seller.ban_date }}</td>
+                        <td><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ seller.first_name }} {{ seller.last_name }}</td>
+                        <td>{{ seller.first_name }} {{ seller.last_name }}</td>
+                        <td>{{ seller.created_at }}</td>
+                        <td>{{ seller.banned_at }}</td>
                         <!-- <td><button class="bg-green-800 rounded-xl p-2 border-2 border-black hover:bg-green-900 py-0" @click="profilePage = true">Show</button></td> -->
                         <!-- <td><button class="bg-red-700 rounded-xl p-2 border-2 border-black hover:bg-red-900 py-0">Unban</button></td> -->
                         <td class="hover-on-arrow w-24" title="See More Details" @click="profilePage = true"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow--' + (index + 1)"/></td>
@@ -42,7 +42,7 @@
         </div>
         <h1 v-else-if="userType === 2 && loaded && sellers.length === 0" class="capitalize h-full flex justify-center mt-44 text-3xl font-bold">no one is currently being banned</h1>
     </div>
-    <Profile v-else @backToMain="profilePage = false" @toggleBan="toggleBan()" :userType="userType" :user="userType === 1 ? buyer : seller"/>
+    <Profile v-else @backToMain="profilePage = false" @toggleBan="toggleBan()" :userType="userType" :user="userType === 1 ? _buyer : _seller"/>
 </template>
 
 <script>
@@ -58,6 +58,8 @@
         },
         data() {
             return {
+                _buyer: {},
+                _seller: {},
                 userType: 1,
                 profilePage: false,
                 loaded: false,
@@ -65,120 +67,132 @@
                 sellerFields: ['No.', 'store name', 'name', 'registration date', 'ban date', ' '],
                 buyers: [],
                 sellers: [],
-                buyer:
-                {
-                    ID: 2022,
-                    name: 'Eav Long Sok',
-                    email: 'esok@paragoniu.edu.kh',
-                    dob: '01/01/2000',
-                    created_at: '27/10/2020',
-                    addresses: [
-                        {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 1'},
-                        {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 2'},
-                        {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 3'},
-                        {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 4'},
-                        {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 5'},
-                    ],
-                    orders: 'some orders',
-                    banned: true
-                },
-                seller: {
-                    ID: 2022,
-                    store_name: 'ShopMe',
-                    name: 'Eav Long Sok',
-                    email: 'esok@paragoniu.edu.kh',
-                    dob: '01/01/2000',
-                    created_at: '27/10/2020',
-                    verified_at: '07/11/2022',
-                    verified_by: 'Yi Long Ma',
-                    verifier_ID: 2202,
-                    business_address: {user_id: 2022, region_id: 1, street_number: 101, house_number: 202},
-                    business_info: {info: 'some information'},
-                    description: 'My address description',
-                    recent_sales: [
-                        {
-                            product_id: 10,
-                            product_name: 'Phone case',
-                            quantity: 5,
-                            total_price: 50,
-                            discount_percentage: 0
-                        },
-                        {
-                            product_id: 10,
-                            product_name: 'Phone case',
-                            quantity: 5,
-                            total_price: 50,
-                            discount_percentage: 0
-                        },
-                        {
-                            product_id: 10,
-                            product_name: 'Phone case',
-                            quantity: 5,
-                            total_price: 50,
-                            discount_percentage: 0
-                        }
-                    ],
+                // buyer:
+                // {
+                //     ID: 2022,
+                //     name: 'Eav Long Sok',
+                //     email: 'esok@paragoniu.edu.kh',
+                //     dob: '01/01/2000',
+                //     created_at: '27/10/2020',
+                //     addresses: [
+                //         {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 1'},
+                //         {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 2'},
+                //         {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 3'},
+                //         {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 4'},
+                //         {user_id: 2022, region_id: 1, street_number: 101, house_number: 202, description: 'My address number 5'},
+                //     ],
+                //     orders: 'some orders',
+                //     banned: true
+                // },
+                // seller: {
+                //     ID: 2022,
+                //     store_name: 'ShopMe',
+                //     name: 'Eav Long Sok',
+                //     email: 'esok@paragoniu.edu.kh',
+                //     dob: '01/01/2000',
+                //     created_at: '27/10/2020',
+                //     verified_at: '07/11/2022',
+                //     verified_by: 'Yi Long Ma',
+                //     verifier_ID: 2202,
+                //     business_address: {user_id: 2022, region_id: 1, street_number: 101, house_number: 202},
+                //     business_info: {info: 'some information'},
+                //     description: 'My address description',
+                //     recent_sales: [
+                //         {
+                //             product_id: 10,
+                //             product_name: 'Phone case',
+                //             quantity: 5,
+                //             total_price: 50,
+                //             discount_percentage: 0
+                //         },
+                //         {
+                //             product_id: 10,
+                //             product_name: 'Phone case',
+                //             quantity: 5,
+                //             total_price: 50,
+                //             discount_percentage: 0
+                //         },
+                //         {
+                //             product_id: 10,
+                //             product_name: 'Phone case',
+                //             quantity: 5,
+                //             total_price: 50,
+                //             discount_percentage: 0
+                //         }
+                //     ],
                     banned: true
                 }
-            }
-        },
-        methods: {
-            toggleBan() {
-                if (this.userType === 1) {
-                    this.buyer.banned = !this.buyer.banned
-                }
-                else this.seller.banned = !this.seller.banned
             },
-            displayArrow(arrowName, rowID) {
-                var arrowID = arrowName + rowID
-                var arrow = (this.$refs[arrowID])[0]
-                arrow.style.opacity = 1;
-            },
-
-            hideArrow(arrowName, rowID) {
-                var arrowID = arrowName + rowID
-                var arrow = (this.$refs[arrowID])[0]
-                arrow.style.opacity = 0;
-            },
-
-            async fetchData() {
-                this.loaded = false
-                const route = "api/search/" + (this.userType === 1 ? 'buyer' : 'seller');
-                let params = new URLSearchParams();
-                params.append('q', '');
-                params.append('page', 1);
-                params.append('limit', 30);
-                params.append('status', 0);
-                try {
-                    const response = await axios.get(route, {
-                        params: params,
-                        headers: {
-                            Authorization: 'Bearer ' + localStorage.getItem('token')
-                        }
-                    });
-
-                    // console.log(response.data);
+            methods: {
+                toggleBan() {
                     if (this.userType === 1) {
-                        this.buyers = response.data;
+                        if (this._buyer.status === 0) {
+                            this._buyer.status = 1
+                        }
+                        else {
+                            this._buyer.status = 0
+                        }
                     }
                     else {
-                        this.sellers = response.data;
+                        if (this._seller.status === 0) {
+                            this._seller.status = 1
+                        }
+                        else {
+                            this._seller.status = 0
+                        }
                     }
-                    this.loaded = true
+                },
+                displayArrow(arrowName, rowID) {
+                    var arrowID = arrowName + rowID
+                    var arrow = (this.$refs[arrowID])[0]
+                    arrow.style.opacity = 1;
+                },
+
+                hideArrow(arrowName, rowID) {
+                    var arrowID = arrowName + rowID
+                    var arrow = (this.$refs[arrowID])[0]
+                    arrow.style.opacity = 0;
+                },
+
+                async fetchData() {
+                    this.loaded = false
+                    const route = "api/search/" + (this.userType === 1 ? 'buyer' : 'seller');
+                    let params = new URLSearchParams();
+                    params.append('q', '');
+                    params.append('page', 1);
+                    params.append('limit', 30);
+                    params.append('status', 0);
+                    try {
+                        const response = await axios.get(route, {
+                            params: params,
+                            headers: {
+                                Authorization: 'Bearer ' + localStorage.getItem('token')
+                            }
+                        });
+
+                        // console.log(response.data);
+                        if (this.userType === 1) {
+                            this.buyers = response.data;
+                        }
+                        else {
+                            this.sellers = response.data;
+                        }
+                        this.loaded = true
+                    }
+                    catch(err) {
+                        console.log(err.response.data)
+                    }
+                }
+            },
+            async mounted() {
+                try {
+                    await this.fetchData();
+                    // console.log(this.buyers)
                 }
                 catch(err) {
-                    console.log(err.response.data)
+                    console.log(err)
                 }
             }
-        },
-        async mounted() {
-            try {
-                await this.fetchData();
-            }
-            catch(err) {
-                console.log(err)
-            }
-        }
     }
 </script>
 

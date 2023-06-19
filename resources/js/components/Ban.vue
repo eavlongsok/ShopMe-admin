@@ -8,9 +8,9 @@
         </div>
         <small class="ml-3 text-sm block">Search for user by name or ID</small>
         <div class="ml-3 mt-3">
-            <input type="radio" name="userType" id="buyer" value=1 @click="userType = 1; fetchData()" :checked="userType === 1"/>
+            <input type="radio" name="userType" id="buyer" value=1 @click="userType = 1" :checked="userType === 1"/>
             <label for="buyer" class="mr-4">Buyer</label>
-            <input type="radio" name="userType" id="seller" value=2/ @click="userType = 2; fetchData()" :checked="userType === 2">
+            <input type="radio" name="userType" id="seller" value=2/ @click="userType = 2" :checked="userType === 2">
             <label for="seller">Seller</label>
         </div>
 
@@ -19,10 +19,10 @@
             <Table class="w-11/12 mt-3 mb-5" :fields="buyerFields">
                 <tbody>
                     <tr v-for="(buyer, index) in buyers" @mouseover="displayArrow('arrow-', index+1)" @mouseleave="hideArrow('arrow-', index+1) " @click="_buyer = buyer">
-                        <td>{{ index + 1 }}</td>
+                        <td @click="profilePage = true">{{ index + 1 }}</td>
                         <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ buyer.first_name }} {{ buyer.last_name }}</td>
                         <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{ buyer.email }}</td>
-                        <td>{{ buyer.created_at }}</td>
+                        <td @click="profilePage = true">{{ buyer.created_at }}</td>
                         <!-- <td><button class="bg-green-800 rounded-xl p-2 border-2 border-black hover:bg-green-900 py-0" @click="profilePage = true">Show</button></td> -->
                         <td class="hover-on-arrow w-24" title="See More Details" @click="profilePage = true"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow-' + (index + 1)"/></td>
                     </tr>
@@ -175,31 +175,6 @@ import Loader from './Loader.vue';
             }
 
         },
-        async fetchData() {
-            try {
-                let params = new URLSearchParams();
-                params.append('userType', this.userType);
-                params.append('limit', 30);
-                params.append('offset', 0);
-                const response = await axios.get('/api/users', {
-                    params: params,
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('admin_token'),
-                    }
-                });
-
-
-                if (this.userType === 1) {
-                    this.buyers = response.data
-                }
-                else {
-                    this.sellers = response.data
-                }
-            }
-            catch (err) {
-                console.log(err.response.data)
-            }
-        }
     },
     async mounted() {
         // const response = await this.fetchData()

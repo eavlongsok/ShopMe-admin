@@ -23,7 +23,7 @@
                     Status:
                 </div>
                 <div class="col-two">
-                    {{user.status === 0 ? 'Banned' : 'Active'}}
+                    {{user.status == 0 ? 'Banned' : 'Active'}}
                 </div>
             </div>
 
