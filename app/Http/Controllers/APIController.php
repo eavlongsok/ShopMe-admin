@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\Buyer;
 use App\Models\Seller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class APIController extends Controller
 {
@@ -34,6 +37,7 @@ class APIController extends Controller
     }
 
     public function searchUsers(Request $request, $userType) {
+        // return response()->json(['message' => 'searching for ' . $userType], 200);
         $query = $request->q;
 
         if ($request->has('limit'))
@@ -116,7 +120,7 @@ class APIController extends Controller
         $id = $request->id;
         $tableName = $userType;
         $idName = $userType == 'seller' ? 'seller_id' : 'buyer_id';
-        $ban = DB::table($tableName)->where($idName, '=', $id)->update(['status' => 0, 'banned_at' => Carbon::now(), 'banned_by' => Auth::guard('admin_token')->user()->admin_id]);
+        $ban = DB::table($tableName)->where($idName, '=', $id)->update(['status' => 0, 'banned_at' => Carbon::now(), 'banned_by' => $admin_id = $request->user()->admin_id]);
         if ($ban) {
             return response()->json(['message' => 'banned ' . $tableName . ' with the ID of ' . $id], 200);
         }
@@ -157,5 +161,54 @@ class APIController extends Controller
             return response()->json(['message' => 'approved'], 200);
         }
         else return response()->json(['error' => 'something went wrong'], 500);
+    }
+
+    public function getAdminInformation(Request $request) {
+        // $token = $request->bearerToken();
+        $admin_id = $request->user()->admin_id;
+        $info = DB::table('admin')->where('admin_id', $admin_id)->first();
+        if ($info) {
+            $info = [
+                'admin_id' => $info->admin_id,
+                'first_name' => $info->first_name,
+                'last_name' => $info->last_name,
+                'username' => $info->username,
+                'created_at' => $info->created_at,
+                "updated_at"=> $info->updated_at,
+            ];
+            return response()->json($info, 200);
+        }
+        else return response()->json(['error' => 'something went wrong'], 500);
+    }
+
+    public function createNewAdmin(Request $request) {
+        $first_name = $request->input('first_name');
+        $last_name = $request->input('last_name');
+        $username = $request->input('username');
+        $password = $request->input('password');
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'username' => 'required|string|regex:/^\S*$/u|unique:admin,username',
+            'password' => 'required|min:8'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $admin = new Admin();
+        $admin->first_name = trim($first_name);
+        $admin->last_name = trim($last_name);
+        $admin->username = trim($username);
+        $admin->password = Hash::make($password);
+        $admin->save();
+
+        $newAdmin = Admin::where('username', $username)->first();
+        $token = $newAdmin->createToken(time())->plainTextToken;
+        $admin->api_token = $token;
+
+        return response()->json(['success' => ['message' => 'Created successfully'], 'token' => $token], 200);
     }
 }

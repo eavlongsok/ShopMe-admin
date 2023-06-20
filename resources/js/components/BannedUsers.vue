@@ -166,7 +166,7 @@
                         const response = await axios.get(route, {
                             params: params,
                             headers: {
-                                Authorization: 'Bearer ' + localStorage.getItem('token')
+                                Authorization: 'Bearer ' + localStorage.getItem('admin_token')
                             }
                         });
 

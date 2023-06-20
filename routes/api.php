@@ -20,9 +20,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => 'auth:sanctum'], function() {
+    // might add UI
+    Route::post('/create/admin', [APIController::class, 'createNewAdmin']);
+
     Route::get('/search/{userType}', [APIController::class, 'searchUsers']);
     Route::get('/ban/{userType}', [APIController::class, 'ban']);
     Route::get('/unban/{userType}', [APIController::class, 'unban']);
     Route::get('/listingRequests', [APIController::class, 'listingRequests']);
     Route::get('/approveProduct', [APIController::class, 'approveProduct']);
+    Route::get('/admin/info', [APIController::class, 'getAdminInformation']); // get the logged in admin info
 });
