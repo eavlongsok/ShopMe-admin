@@ -481,6 +481,9 @@ video {
   --tw-backdrop-saturate:  ;
   --tw-backdrop-sepia:  ;
 }
+.static{
+  position: static;
+}
 .fixed{
   position: fixed;
 }
@@ -527,6 +530,9 @@ video {
 }
 .mb-5{
   margin-bottom: 1.25rem;
+}
+.mb-\[33\%\]{
+  margin-bottom: 33%;
 }
 .ml-2{
   margin-left: 0.5rem;
@@ -585,20 +591,14 @@ video {
 .mt-6{
   margin-top: 1.5rem;
 }
-.mb-10{
-  margin-bottom: 2.5rem;
+.mt-24{
+  margin-top: 6rem;
 }
-.mb-auto{
-  margin-bottom: auto;
+.mt-12{
+  margin-top: 3rem;
 }
-.mb-\[1000px\]{
-  margin-bottom: 1000px;
-}
-.mb-\[30\%\]{
-  margin-bottom: 30%;
-}
-.mb-\[33\%\]{
-  margin-bottom: 33%;
+.mt-14{
+  margin-top: 3.5rem;
 }
 .block{
   display: block;
@@ -617,6 +617,9 @@ video {
 }
 .hidden{
   display: none;
+}
+.aspect-square{
+  aspect-ratio: 1 / 1;
 }
 .h-10{
   height: 2.5rem;
@@ -678,6 +681,9 @@ video {
 .w-screen{
   width: 100vw;
 }
+.w-auto{
+  width: auto;
+}
 .table-auto{
   table-layout: auto;
 }
@@ -723,11 +729,17 @@ video {
 .items-center{
   align-items: center;
 }
+.justify-end{
+  justify-content: flex-end;
+}
 .justify-center{
   justify-content: center;
 }
 .justify-between{
   justify-content: space-between;
+}
+.justify-around{
+  justify-content: space-around;
 }
 .justify-evenly{
   justify-content: space-evenly;
@@ -780,11 +792,11 @@ video {
 .border-r-0{
   border-right-width: 0px;
 }
-.border-t-4{
-  border-top-width: 4px;
-}
 .border-r-4{
   border-right-width: 4px;
+}
+.border-t-4{
+  border-top-width: 4px;
 }
 .border-black{
   --tw-border-opacity: 1;
@@ -895,8 +907,41 @@ video {
 .pt-5{
   padding-top: 1.25rem;
 }
+.pl-3{
+  padding-left: 0.75rem;
+}
 .text-center{
   text-align: center;
+}
+.text-start{
+  text-align: start;
+}
+.indent-3{
+  text-indent: 0.75rem;
+}
+.indent-10{
+  text-indent: 2.5rem;
+}
+.indent-\[30\%\]{
+  text-indent: 30%;
+}
+.indent-\[10\%\]{
+  text-indent: 10%;
+}
+.indent-16{
+  text-indent: 4rem;
+}
+.indent-24{
+  text-indent: 6rem;
+}
+.indent-36{
+  text-indent: 9rem;
+}
+.indent-\[50\%\]{
+  text-indent: 50%;
+}
+.indent-\[45\%\]{
+  text-indent: 45%;
 }
 .align-middle{
   vertical-align: middle;
@@ -1085,6 +1130,11 @@ body{
 .hover\:bg-red-900:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(127 29 29 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-red-700:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
 }
 
 .hover\:font-bold:hover{

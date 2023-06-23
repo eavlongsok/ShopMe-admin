@@ -211,4 +211,46 @@ class APIController extends Controller
 
         return response()->json(['success' => ['message' => 'Created successfully'], 'token' => $token], 200);
     }
+
+    public function getPendingVerificationAccounts(Request $request) {
+        if (isset($request->limit))
+            $limit = $request->limit;
+        else $limit = 20;
+        if (isset($request->page))
+            $page = $request->page;
+        else $page = 1;
+
+        $pendingVerificationAccounts = DB::table('verification')->leftJoin('seller', 'verification.seller_id', '=', 'seller.seller_id')->leftJoin('address', 'address.seller_id', 'seller.seller_id')->leftJoin('region', 'address.region_id', 'region.region_id')->where('verification.verified_at', null)->where('seller.status', 1)->orderBy('verification.created_at')->paginate($limit, ['verification.ver_id', 'verification.store_name', 'verification.business_info', 'seller.seller_id', 'verification.created_at', 'seller.first_name', 'seller.img_url', 'seller.last_name', 'seller.email', 'seller.date_of_birth', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'verification.created_at'], 'page', $request->page);
+
+        return response($pendingVerificationAccounts, 200);
+    }
+
+    public function verifyAccount(Request $request) {
+        $admin_id = $request->user()->admin_id;
+        $ver_id = $request->id;
+        $verify = DB::table('verification')->where('ver_id', $ver_id)->update(['verified_at' => Carbon::now(), 'verified_by' => $admin_id]);
+
+        if ($verify) return response()->json(['success' => 'verified verification ID '.$ver_id]);
+        else return response()->json(['error' => 'something went wrong'], 500);
+    }
+
+    public function unverifyAccount(Request $request) {
+        $admin_id = $request->user()->admin_id;
+        $ver_id = $request->id;
+        $verify = DB::table('verification')->where('ver_id', $ver_id)->update(['verified_at' => null, 'verified_by' => null]);
+
+        if ($verify) return response()->json(['success' => 'unverified verification ID '.$ver_id]);
+        else return response()->json(['error' => 'something went wrong'], 500);
+    }
+
+    public function rejectVerification(Request $request) {
+        $admin_id = $request->user()->admin_id;
+        $ver_id = $request->id;
+        $seller_id = DB::table('verification')->where('ver_id', $ver_id)->first()->seller_id;
+        $reject = DB::table('verification')->where('ver_id', $ver_id)->delete();
+        // $address = DB::table('address')->where('seller_id', $seller_id)->delete();
+
+        if ($reject) return response()->json(['success' => 'rejected verification ID '.$ver_id]);
+        else return response()->json(['error' => 'something went wrong'], 500);
+    }
 }

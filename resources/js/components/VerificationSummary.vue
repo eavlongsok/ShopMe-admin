@@ -1,8 +1,11 @@
 <template>
     <h2 class="heading-2 mt-10 mb-3 inline-block">Verification</h2>
-    <span class="hover:font-bold hover:underline ml-3 text-sm cursor-pointer" @click="emitTabEvent(2)">View All</span>
+    <span class="hover:font-bold hover:underline ml-3 text-sm cursor-pointer" @click="$emit('verifytab', 2)">View All</span>
 
-    <Table class="w-11/12" :fields="fields">
+    <div v-if="loading" class="flex justify-center mt-14">
+        <Loader :size="4" :thickness="0.4"/>
+    </div>
+    <Table class="w-11/12" :fields="fields" v-else-if="!loading && sellers.length != 0">
         <tbody>
             <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="$emit('infopage')">
                 <td>{{index+1}}</td>
@@ -14,35 +17,25 @@
             </tr>
         </tbody>
     </Table>
+    <h2 class="text-2xl text-center mt-12" v-else-if="sellers.length == 0 && !loading">No pending verification!</h2>
 </template>
 
 <script>
     import Table from './Table.vue'
+    import Loader from './Loader.vue'
     export default {
         name: 'VerificationSummary',
         data() {
             return {
+                loading: true,
                 fields: ['No.', 'Store Name', "Seller's Name", 'Email', 'Submission date', ' '],
-                sellers: [
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                    {store_name: 'ShopMe', seller_name: 'Eav Long Sok', email: 'esok@paragoniu.edu.kh', submission_date: '19/03/1012'},
-                ]
+                sellers: null
             }
         },
         components: {
-            Table
+            Table, Loader
         },
         methods: {
-            emitTabEvent(tabID) {
-                this.$emit("verifytab", tabID)
-            },
             copyToClipBoard(rowID) {
                 var emailID = "email" + rowID
                 var emailBox = (this.$refs[emailID])[0]
@@ -66,7 +59,30 @@
                 arrow.style.opacity = 0;
             }
         },
-        emits: ['verifytab', 'infopage']
+        emits: ['verifytab', 'infopage'],
+        methods: {
+            async getPendingVerifications() {
+                try {
+                    let params = new URLSearchParams();
+                    params.append('limit', 20);
+                    params.append('page', 1);
+
+                    const response = await axios.get('/api/verification', {params: params, headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+                    }});
+
+                    this.sellers = response.data.data;
+                    this.loading = false;
+                }
+
+                catch(err) {
+                    console.log(err.response.data)
+                }
+            },
+        },
+        async mounted() {
+            await this.getPendingVerifications()
+        }
     }
 </script>
 

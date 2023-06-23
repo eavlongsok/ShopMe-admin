@@ -3,18 +3,30 @@
         <img src="back-arrow.png" width="16" class="inline-block">
         <span class="text-lg align-middle ml-2 underline hover:font-bold">Back</span>
     </div>
-    <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10">
+    <div class="grid grid-cols-5 gap-6 mx-auto mt-12 w-5/6 select-text pb-10">
         <div class="w-full col-span-2">
-            <img src="bingchilling.jpeg" class="w-full"/>
-            <button class="block bg-green-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-green-700 font-bold text-white mt-5 w-32 ml-auto select-none" @click="approve">Approve</button>
+            <img :src="seller.img_url" class="w-full"/>
+            <div class="flex justify-around">
+                <button class="rounded-xl text-xl p-2 border-2 border-black font-bold text-white mt-5 w-32 select-none bg-red-600 hover:bg-red-700" @click="reject">Reject</button>
+                <button class="rounded-xl text-xl p-2 border-2 border-black font-bold text-white mt-5 w-32 select-none" :class="{'bg-green-600 hover:bg-green-700': !isVerified, 'bg-red-600 hover:bg-red-700': isVerified}" @click="handleVerificationBtn">{{ isVerified ? 'Unverify' : 'Verify'}}</button>
+            </div>
         </div>
         <div class="col-span-3">
             <div class="my-row">
                 <div class="col-one">
-                    ID:
+                    Verification ID:
                 </div>
                 <div class="col-two">
-                    {{seller.ID}}
+                    {{seller.ver_id}}
+                </div>
+            </div>
+
+            <div class="my-row">
+                <div class="col-one">
+                    Seller ID:
+                </div>
+                <div class="col-two">
+                    {{seller.seller_id}}
                 </div>
             </div>
 
@@ -29,21 +41,13 @@
 
             <div class="my-row">
                 <div class="col-one">
-                    name:
+                    seller's name:
                 </div>
                 <div class="col-two">
-                    {{seller.name}}
+                    {{seller.first_name}} {{ seller.last_name }}
                 </div>
             </div>
 
-            <div class="my-row">
-                <div class="col-one">
-                    id card:
-                </div>
-                <div class="col-two">
-                    {{seller.id_card}}
-                </div>
-            </div>
 
             <div class="my-row">
                 <div class="col-one">
@@ -59,7 +63,18 @@
                     address:
                 </div>
                 <div class="col-two">
-                    {{seller.address}}
+                    <p>Building Number: {{seller.building_number}}</p>
+                    <p>Street Number: {{ seller.street_number }}</p>
+                    <p>{{ seller.city }}, {{ seller.region_name }}</p>
+                </div>
+            </div>
+
+            <div class="my-row">
+                <div class="col-one">
+                    zipcode:
+                </div>
+                <div class="col-two">
+                    {{seller.zipcode}}
                 </div>
             </div>
 
@@ -68,7 +83,7 @@
                     submission date:
                 </div>
                 <div class="col-two">
-                    {{seller.submission_date}}
+                    {{seller.created_at}}
                 </div>
             </div>
 
@@ -87,14 +102,61 @@
 <script>
     export default {
         name: 'VerificationInfo',
+        data() {
+            return {
+                isVerified: false
+            }
+        },
         props: ['seller'],
-        emits: ['backToMain'],
+        emits: ['backToMain', 'reloadVerification'],
         methods: {
-            approve() {
-                event.target.innerText = 'Approved'
+            async handleVerificationBtn(event) {
+                const url = this.isVerified ? '/api/unverify/' : '/api/verify/'
+                let params = new URLSearchParams();
+                params.append('id', this.seller.ver_id)
+
+                try {
+                    const response = await axios.get(url, {
+                        params,
+                        headers: {
+                            Authorization: 'Bearer ' + localStorage.getItem('admin_token')
+                        }
+                    })
+
+                    console.log(response.data)
+                }
+                catch(err) {
+                    console.log(err.response.data)
+                }
+                this.isVerified = !this.isVerified
+            },
+
+            async reject() {
+                let confirmation = confirm('Are you sure you want to reject this verification?')
+
+                if (!confirmation) return
+
+                let params = new URLSearchParams();
+                params.append('id', this.seller.ver_id)
+                try {
+                    const response = await axios.get('/api/rejectVerification', {
+                        params,
+                        headers: {
+                            Authorization: 'Bearer ' + localStorage.getItem('admin_token')
+                        }
+                    })
+
+                    console.log(response.data)
+                    this.$emit('reloadVerification')
+
+                }
+                catch(err) {
+                    console.log(err)
+                }
             }
         }
     }
+
 </script>
 
 <style scoped>

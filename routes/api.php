@@ -29,4 +29,8 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/listingRequests', [APIController::class, 'listingRequests']);
     Route::get('/approveProduct', [APIController::class, 'approveProduct']);
     Route::get('/admin/info', [APIController::class, 'getAdminInformation']); // get the logged in admin info
+    Route::get('/verification', [APIController::class, 'getPendingVerificationAccounts']);
+    Route::get('/verify', [APIController::class, 'verifyAccount']);
+    Route::get('/unverify', [APIController::class, 'unverifyAccount']);
+    Route::get('/rejectVerification', [APIController::class, 'rejectVerification']);
 });

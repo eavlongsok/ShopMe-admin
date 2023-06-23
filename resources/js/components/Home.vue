@@ -16,7 +16,7 @@
                 this.$emit('verifytab', tabID)
             }
         },
-        emits: ['verifytab']
+        emits: ['verifytab', 'infopage']
     }
 </script>
 
