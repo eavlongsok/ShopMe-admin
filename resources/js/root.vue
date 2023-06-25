@@ -1,6 +1,6 @@
 <template>
     <div class="mt-16">
-        <Header :active="active"/>
+        <Header @adminprofile="active = 0" />
         <div>
             <Sidebar class="fixed w-1/5 z-[1]" :active="active" @changetab="changeTab"/>
             <div class="w-[79%] ml-[21%] pt-5">
@@ -12,6 +12,8 @@
                 <ProductApproval v-else-if="active === 6" />
                 <ProductManagement v-else-if="active === 7" />
                 <RemovedProducts v-else-if="active === 8" />
+                <AdminProfile v-else-if="active === 0" @changetab="changeTab"/>
+                <EditAdminProfile v-else-if="active === -1" @changetab="changeTab"/>
             </div>
         </div>
     </div>
@@ -20,7 +22,6 @@
 <script>
     import Sidebar from './components/Sidebar.vue'
     import Header from './components/Header.vue'
-    import ProfileBox from './components/ProfileBox.vue'
     import Home from './components/Home.vue'
     import Verification from './components/Verification.vue'
     import BannedUsers from './components/BannedUsers.vue'
@@ -30,6 +31,8 @@
     import ProductManagement from './components/ProductManagement.vue'
     import ProductApproval from './components/ProductApproval.vue'
     import Approve from './components/Approve.vue'
+    import AdminProfile from './components/AdminProfile.vue'
+    import EditAdminProfile from './components/EditAdminProfile.vue'
     import {ref} from 'vue';
 
     export default {
@@ -42,20 +45,21 @@
             }
         },
         components: {
-            Sidebar,
-            Header,
-            ProfileBox,
-            Home,
-            Verification,
-            BannedUsers,
-            Login,
-            Ban,
-            ProductManagement,
-            RemovedProducts,
-            ProductManagement,
-            ProductApproval,
-            Approve
-        },
+    Sidebar,
+    Header,
+    Home,
+    Verification,
+    BannedUsers,
+    Login,
+    Ban,
+    ProductManagement,
+    RemovedProducts,
+    ProductManagement,
+    ProductApproval,
+    Approve,
+    AdminProfile,
+    EditAdminProfile
+},
         setup() {
             const verificationReloadKey = ref(0)
             const forceRerender = () => {

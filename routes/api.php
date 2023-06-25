@@ -22,6 +22,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['middleware' => 'auth:sanctum'], function() {
     // might add UI
     Route::post('/create/admin', [APIController::class, 'createNewAdmin']);
+    Route::get('/admin/info', [APIController::class, 'getAdminInformation']); // get the logged in admin info
+    Route::post('/admin/editAccount', [APIController::class, 'editAccount']); // edit the logged in admin account
 
     Route::get('/search/{userType}', [APIController::class, 'searchUsers']);
     Route::get('/ban/{userType}', [APIController::class, 'ban']);
@@ -29,7 +31,6 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/listingRequests', [APIController::class, 'listingRequests']);
     Route::get('/approveProduct', [APIController::class, 'approveProduct']);
     Route::get('/unapproveProduct', [APIController::class, 'unapproveProduct']);
-    Route::get('/admin/info', [APIController::class, 'getAdminInformation']); // get the logged in admin info
     Route::get('/verification', [APIController::class, 'getPendingVerificationAccounts']);
     Route::get('/verify', [APIController::class, 'verifyAccount']);
     Route::get('/unverify', [APIController::class, 'unverifyAccount']);

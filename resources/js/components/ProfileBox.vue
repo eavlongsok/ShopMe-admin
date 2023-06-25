@@ -4,7 +4,7 @@
         <p class="inline-block text-xl text-white ml-6">{{ admin_name }}<img src="side-arrow.svg" height="20" width="20"/></p>
         <div class="dropdown-menu rounded-lg">
             <ul>
-                <li class="dropdown-item hover:bg-gray-300">profile</li>
+                <li class="dropdown-item hover:bg-gray-300" @click="$emit('adminprofile')">profile</li>
                 <form ref="form" action="log-out" method="post">
                     <input type="hidden" name="_token" :value="csrf"/>
                     <li class="dropdown-item bg-red-600 text-white hover:bg-red-800" @click="submit()">log out</li>
@@ -25,6 +25,7 @@
                 admin_name: ''
             }
         },
+        emits: ['adminprofile'],
         methods: {
             submit() {
                 this.$refs.form.submit();

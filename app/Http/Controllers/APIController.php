@@ -279,6 +279,54 @@ class APIController extends Controller
         else return response()->json(['error' => 'something went wrong'], 500);
     }
 
+    public function editAccount(Request $request) {
+        $admin = $request->user();
+        $username = $request->input('username');
+        $password = $request->input('password');
+
+        if ($username == $admin->username) {
+            $rules = [
+                'password' => 'required|min:8',
+                'confirmPassword' => 'same:password',
+            ];
+        }
+
+        else {
+            if (isset($password)) {
+                $rules = [
+                    'username' => 'required|unique:admin,username',
+                    'password' => 'required|min:8',
+                    'confirmPassword' => 'same:password',
+                ];
+            }
+            else {
+                $rules = [
+                    'username' => 'required|unique:admin,username',
+                ];
+            }
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $admin->username = $username;
+        if (isset($password)) {
+            if (Hash::check($password, $admin->password)) {
+                return response()->json(['errors' => ['password' => ['password cannot be the same as the old one']]], 422);
+            }
+            else {
+                $admin->password = Hash::make($password);
+            }
+        }
+        $admin->save();
+
+        return response()->json(['success' => 'successfully updated'], 200);
+
+    }
+
     public function createNewAdmin(Request $request) {
         $first_name = $request->input('first_name');
         $last_name = $request->input('last_name');
