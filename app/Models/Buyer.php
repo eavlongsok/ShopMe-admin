@@ -8,38 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Scout\Searchable;
 
-class Buyer extends Model implements Authenticatable
+class Buyer extends Model
 {
-    use HasApiTokens, Searchable, HasFactory;
+    use Searchable, HasFactory;
     protected $table = 'buyer';
     protected $primaryKey = 'buyer_id';
-
-    function getAuthIdentifierName() {
-        return 'buyer_id';
-    }
-    public function getAuthIdentifier() {
-        return $this->buyer_id;
-    }
-
-    public function getAuthPassword()
-    {
-        return $this->password;
-    }
-
-    public function getRememberToken()
-    {
-        return $this->remember_token;
-    }
-
-    public function setRememberToken($value)
-    {
-        $this->remember_token = $value;
-    }
-
-    public function getRememberTokenName()
-    {
-        return 'remember_token';
-    }
 
     public function searchableAs() {
         return 'buyer_index';

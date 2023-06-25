@@ -24,6 +24,12 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
+
+        $usernameExists = Admin::where('username', $username)->exists();
+        if (!$usernameExists) {
+            return response()->json(['errors' => ['accountNotFound' => 'Username doesn\'t exist']], 401);
+        }
+
         $remember = $request->input('remember');
 
         if (Auth::guard('admin') -> attempt(['username' => $username, 'password' => $password], $remember)) {
@@ -34,7 +40,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
             return response()->json(['success' => ['message' => 'Login successfully'], 'token' => $token], 200);
         } else {
-            return response()->json(['errors' => ['message' => 'Email and password were not matched']], 401);
+            return response()->json(['errors' => ['unmatched' => 'Email and password were not matched']], 401);
         }
     }
 

@@ -570,14 +570,26 @@ video {
 .mt-10{
   margin-top: 2.5rem;
 }
+.mt-12{
+  margin-top: 3rem;
+}
+.mt-14{
+  margin-top: 3.5rem;
+}
 .mt-16{
   margin-top: 4rem;
 }
 .mt-2{
   margin-top: 0.5rem;
 }
+.mt-24{
+  margin-top: 6rem;
+}
 .mt-3{
   margin-top: 0.75rem;
+}
+.mt-36{
+  margin-top: 9rem;
 }
 .mt-4{
   margin-top: 1rem;
@@ -591,14 +603,8 @@ video {
 .mt-6{
   margin-top: 1.5rem;
 }
-.mt-24{
-  margin-top: 6rem;
-}
-.mt-12{
-  margin-top: 3rem;
-}
-.mt-14{
-  margin-top: 3.5rem;
+.mb-36{
+  margin-bottom: 9rem;
 }
 .block{
   display: block;
@@ -639,11 +645,23 @@ video {
 .h-\[400px\]{
   height: 400px;
 }
+.h-\[60vh\]{
+  height: 60vh;
+}
 .h-full{
   height: 100%;
 }
 .h-screen{
   height: 100vh;
+}
+.h-1\/2{
+  height: 50%;
+}
+.h-\[50vh\]{
+  height: 50vh;
+}
+.min-h-\[150vh\]{
+  min-height: 150vh;
 }
 .w-1\/4{
   width: 25%;
@@ -680,9 +698,6 @@ video {
 }
 .w-screen{
   width: 100vw;
-}
-.w-auto{
-  width: auto;
 }
 .table-auto{
   table-layout: auto;
@@ -729,9 +744,6 @@ video {
 .items-center{
   align-items: center;
 }
-.justify-end{
-  justify-content: flex-end;
-}
 .justify-center{
   justify-content: center;
 }
@@ -753,6 +765,9 @@ video {
 .gap-8{
   gap: 2rem;
 }
+.justify-self-end{
+  justify-self: end;
+}
 .overflow-y-scroll{
   overflow-y: scroll;
 }
@@ -773,6 +788,9 @@ video {
 }
 .rounded-xl{
   border-radius: 0.75rem;
+}
+.rounded-\[50\%\]{
+  border-radius: 50%;
 }
 .border{
   border-width: 1px;
@@ -907,41 +925,14 @@ video {
 .pt-5{
   padding-top: 1.25rem;
 }
-.pl-3{
-  padding-left: 0.75rem;
-}
 .text-center{
   text-align: center;
 }
 .text-start{
   text-align: start;
 }
-.indent-3{
-  text-indent: 0.75rem;
-}
-.indent-10{
-  text-indent: 2.5rem;
-}
-.indent-\[30\%\]{
-  text-indent: 30%;
-}
-.indent-\[10\%\]{
-  text-indent: 10%;
-}
-.indent-16{
-  text-indent: 4rem;
-}
 .indent-24{
   text-indent: 6rem;
-}
-.indent-36{
-  text-indent: 9rem;
-}
-.indent-\[50\%\]{
-  text-indent: 50%;
-}
-.indent-\[45\%\]{
-  text-indent: 45%;
 }
 .align-middle{
   vertical-align: middle;
@@ -1122,6 +1113,11 @@ body{
   background-color: rgb(20 83 45 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-red-700:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-red-800:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(153 27 27 / var(--tw-bg-opacity));
@@ -1130,11 +1126,6 @@ body{
 .hover\:bg-red-900:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(127 29 29 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-red-700:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(185 28 28 / var(--tw-bg-opacity));
 }
 
 .hover\:font-bold:hover{

@@ -5,7 +5,7 @@
     </div>
     <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10">
         <div class="w-full col-span-2">
-            <img src="iphone12.jpg" class="w-full"/>
+            <img :src="product.product_img" class="w-full"/>
         </div>
         <div class="col-span-3">
             <div class="my-row">
@@ -13,7 +13,7 @@
                     ID:
                 </div>
                 <div class="col-two">
-                    {{ product.id }}
+                    {{ product.product_id }}
                 </div>
             </div>
 
@@ -22,7 +22,7 @@
                     Product Name:
                 </div>
                 <div class="col-two">
-                    {{ product.name }}
+                    {{ product.product_name }}
                 </div>
             </div>
 
@@ -31,7 +31,16 @@
                     Category:
                 </div>
                 <div class="col-two">
-                    {{ product.category }}
+                    {{ product.category_name }}
+                </div>
+            </div>
+
+            <div class="my-row">
+                <div class="col-one">
+                    Condition:
+                </div>
+                <div class="col-two">
+                    {{ product.product_condition === 1 ? 'New' : 'Used' }}
                 </div>
             </div>
 
@@ -40,7 +49,7 @@
                     Price:
                 </div>
                 <div class="col-two">
-                    {{ product.price }}
+                    {{ formatToCurrency(product.price) }}
                 </div>
             </div>
 
@@ -55,10 +64,28 @@
 
             <div class="my-row">
                 <div class="col-one">
+                    Sold:
+                </div>
+                <div class="col-two">
+                    {{ product.product_sold }}
+                </div>
+            </div>
+
+            <div class="my-row">
+                <div class="col-one">
                     Seller:
                 </div>
                 <div class="col-two">
-                    {{ product.seller }}
+                    {{ product.seller_first_name }} {{ product.seller_last_name }}
+                </div>
+            </div>
+
+            <div class="my-row">
+                <div class="col-one">
+                    Email:
+                </div>
+                <div class="col-two">
+                    {{ product.email }}
                 </div>
             </div>
 
@@ -67,11 +94,11 @@
                     Description:
                 </div>
                 <div class="col-two">
-                    {{ product.description }}
+                    {{ product.product_description }}
                 </div>
             </div>
 
-            <div class="my-row" v-if="product.hasOwnProperty('approved_at')">
+            <div class="my-row">
                 <div class="col-one">
                     Date Approved:
                 </div>
@@ -80,32 +107,15 @@
                 </div>
             </div>
 
-            <div class="my-row" v-if="product.hasOwnProperty('approved_by')">
+            <div class="my-row">
                 <div class="col-one">
                     Approved By:
                 </div>
                 <div class="col-two">
-                    {{ product.approved_by }}
+                    {{ product.admin_first_name }} {{ product.admin_last_name }} (Admin ID: {{ product.approved_by }})
                 </div>
             </div>
 
-            <div class="my-row" v-if="product.hasOwnProperty('delivered_at')">
-                <div class="col-one">
-                    Time Delivered:
-                </div>
-                <div class="col-two">
-                    {{ product.delivered_at }}
-                </div>
-            </div>
-
-            <div class="my-row" v-if="product.hasOwnProperty('delivered_by')">
-                <div class="col-one">
-                    Delivered By:
-                </div>
-                <div class="col-two">
-                    {{ product.delivered_by }}
-                </div>
-            </div>
 
         </div>
     </div>
@@ -115,13 +125,23 @@
     export default {
         name: 'ApprovalInfo',
         props: ['product'],
-        emits: ['backToMain']
+        emits: ['backToMain'],
+        methods: {
+            formatToCurrency(amount){
+                const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                });
+
+                return formatter.format(amount);
+            }
+        }
     }
 </script>
 
 <style scoped>
     .col-one {
-        @apply text-gray-800 font-bold capitalize justify-self-end;
+        @apply text-gray-800 font-bold capitalize justify-self-end text-end;
     }
 
     .col-two {

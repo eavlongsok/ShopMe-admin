@@ -84,6 +84,9 @@ return [
         'admin' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
+            'remember_me' => [
+                'lifetime' => 43200, // 30 days in minutes (30 * 24 * 60)
+            ]
         ],
 
         // 'users' => [

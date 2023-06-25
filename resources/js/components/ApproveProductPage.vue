@@ -5,8 +5,8 @@
     </div>
     <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10">
         <div class="w-full col-span-2">
-            <img :src="product.img_url" class="w-full h-[400px]"/>
-            <button @click="approve(product.product_id)" class="block bg-green-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-green-700 font-bold text-white mt-5 w-32 ml-auto select-none">{{ approved ? "Approved!" : "Approve" }}</button>
+            <img :src="product.img_url" class="w-full h-[400px] aspect-square"/>
+            <button @click="handleApproval(product.product_id)" class="block bg-green-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-green-700 font-bold text-white mt-5 w-32 ml-auto select-none">{{ product.is_approved ? "Approved!" : "Approve" }}</button>
         </div>
         <div class="col-span-3">
             <div class="my-row">
@@ -82,7 +82,6 @@
             </div>
 
 
-
             <div class="my-row">
                 <div class="col-one">
                     Description:
@@ -109,24 +108,32 @@
     export default {
         data() {
             return {
-                approved: false
+                approved: false,
             }
         },
         name: 'ApprovalInfo',
         props: ['product'],
-        emits: ['backToMain'],
+        emits: ['backToMain', 'toggleApprove'],
         methods: {
-            async approve(id) {
-                console.log("token: " + localStorage.getItem("token"))
+            async handleApproval(id) {
+                let route;
+                if (this.product.is_approved) {
+                    route = "/api/unapproveProduct/?id=" + id
+                }
+                else {
+                    route = "/api/approveProduct/?id=" + id
+                }
+                console.log(route)
                 try {
-                    const response = await axios.get("/api/approveProduct/?id="+id, {
+                    const response = await axios.get(route, {
                         headers: {
                             "Authorization": "Bearer " + localStorage.getItem("admin_token")
                         }
                     })
                     if (response.status == 200) {
                         this.approved = true
-                        console.log("approved")
+                        console.log(response.data)
+                        this.$emit('toggleApprove', this.product.product_id)
                     }
                 }
                 catch (err) {
@@ -139,7 +146,7 @@
 
 <style scoped>
     .col-one {
-        @apply text-gray-800 font-bold capitalize justify-self-end;
+        @apply text-gray-800 font-bold capitalize justify-self-end text-end;
     }
 
     .col-two {

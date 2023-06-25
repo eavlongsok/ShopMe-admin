@@ -15,7 +15,11 @@
                     }" type="text" v-model="username" name="username" class="input-box"/>
 
                     <div v-if="errors !== null && errors.hasOwnProperty('username')" class="text-red-600 text-sm">
-                        <span>{{ errors.usermame[0] }}</span>
+                        <span>{{ errors.username[0] }}</span>
+                    </div>
+
+                    <div v-else-if="credentialErrors !== null && credentialErrors.hasOwnProperty('accountNotFound')" class="text-red-600 text-sm">
+                        <span>{{ credentialErrors.accountNotFound }}</span>
                     </div>
 
                     <label for="password" class="block my-1 mt-4" name="password">Enter your password:</label>
@@ -28,6 +32,10 @@
 
                     <div v-if="errors !== null && errors.hasOwnProperty('password')" class="text-red-600 text-sm">
                         <span>{{ errors.password[0] }}</span>
+                    </div>
+
+                    <div v-else-if="credentialErrors !== null && credentialErrors.hasOwnProperty('unmatched')" class="text-red-600 text-sm">
+                        <span>{{ credentialErrors.unmatched }}</span>
                     </div>
 
                     <span class="cursor-pointer hover:font-bold leading-loose" @click="showPassword()" ref="toggle">Show password</span>
@@ -56,7 +64,7 @@
                 remember: false,
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 errors: null,
-                credentialError: null
+                credentialErrors: null
             }
         },
         methods: {
@@ -80,6 +88,8 @@
                 }
             },
             async handleSubmit() {
+                this.errors = null
+                this.credentialErrors = null
                 try {
                     const req = await axios.post('/log-in', {username: this.username, password: this.password, remember: this.remember})
 
@@ -90,13 +100,13 @@
                     }
                 }
                 catch (err) {
-                    console.log(err.response.data)
+                    // console.log(err.response.data)
                     if (err.response.status === 422) {
                         this.errors = err.response.data.errors
+                        console.log(this.errors)
                     }
                     else if (err.response.status === 401) {
                         this.credentialErrors = err.response.data.errors
-                        console.log(this.credentialErrors)
                     }
                     else {
                         this.errors = 'Something went wrong. Please try again later.'

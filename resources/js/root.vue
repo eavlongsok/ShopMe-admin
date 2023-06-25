@@ -4,8 +4,8 @@
         <div>
             <Sidebar class="fixed w-1/5 z-[1]" :active="active" @changetab="changeTab"/>
             <div class="w-[79%] ml-[21%] pt-5">
-                <Home v-if="active === 1" @verifytab="changeTab(2)" @infopage="changeTab(2); verifyInfoPage = true"/>
-                <Verification v-else-if="active === 2" :verifyInfoPage="verifyInfoPage" @reloadVerification="forceRerender" :key="verificationReloadKey"/>
+                <Home v-if="active === 1" @verifytab="changeTab(2)" @infopage="goToInfoPage"/>
+                <Verification v-else-if="active === 2" :verifyInfoPage="verifyInfoPage" @reloadVerification="forceRerender" :key="verificationReloadKey" :seller_verification="seller_verification"/>
                 <Ban v-else-if="active === 3" />
                 <BannedUsers v-else-if="active === 4" />
                 <Approve v-else-if="active === 5" />
@@ -38,6 +38,7 @@
                 active: 1,
                 verifyInfoPage: false,
                 session_id: null,
+                seller_verification: null
             }
         },
         components: {
@@ -88,6 +89,11 @@
                 }
                 return decodeURI(dc.substring(begin + prefix.length, end));
             },
+            goToInfoPage(seller) {
+                this.verifyInfoPage = true
+                this.changeTab(2)
+                this.seller_verification = seller
+            }
         },
         mounted() {
             // console.log(this.getCookie('XSRF-TOKEN'))

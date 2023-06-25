@@ -8,38 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Scout\Searchable;
 
-class Seller extends Model implements Authenticatable
+class Seller extends Model
 {
-    use HasApiTokens, Searchable;
+    use Searchable, HasFactory;
     protected $table = 'seller';
     protected $primaryKey = 'seller_id';
 
-    function getAuthIdentifierName() {
-        return 'seller_id';
-    }
-    public function getAuthIdentifier() {
-        return $this->seller_id;
-    }
-
-    public function getAuthPassword()
-    {
-        return $this->password;
-    }
-
-    public function getRememberToken()
-    {
-        return $this->remember_token;
-    }
-
-    public function setRememberToken($value)
-    {
-        $this->remember_token = $value;
-    }
-
-    public function getRememberTokenName()
-    {
-        return 'remember_token';
-    }
 
     public function searchableAs() {
         return 'seller_index';
@@ -55,5 +29,4 @@ class Seller extends Model implements Authenticatable
             'status' => $this->status
         ];
     }
-    use HasFactory;
 }

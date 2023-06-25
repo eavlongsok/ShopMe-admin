@@ -1,18 +1,18 @@
 <template>
     <h2 class="heading-2 mt-10 mb-3 inline-block">Verification</h2>
-    <span class="hover:font-bold hover:underline ml-3 text-sm cursor-pointer" @click="$emit('verifytab', 2)">View All</span>
+    <span class="hover:font-bold hover:underline ml-3 text-sm cursor-pointer" @click="$emit('verifytab')">View All</span>
 
     <div v-if="loading" class="flex justify-center mt-14">
         <Loader :size="4" :thickness="0.4"/>
     </div>
     <Table class="w-11/12" :fields="fields" v-else-if="!loading && sellers.length != 0">
         <tbody>
-            <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="$emit('infopage')">
+            <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="$emit('infopage', seller)">
                 <td>{{index+1}}</td>
-                <td><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{seller.store_name}}</td>
-                <td>{{ seller.seller_name }}</td>
+                <td><img :src="seller.img_url" width="40" class="rounded-[50%] aspect-square inline-block mr-3 border-2"/>{{seller.store_name}}</td>
+                <td>{{ seller.first_name }} {{ seller.last_name }}</td>
                 <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{seller.email}}</td>
-                <td>{{ seller.submission_date }}</td>
+                <td>{{ seller.created_at }}</td>
                 <td class="hover-on-arrow w-24" title="See More Details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
             </tr>
         </tbody>
@@ -57,10 +57,7 @@
                 var arrowID = arrowName + rowID
                 var arrow = (this.$refs[arrowID])[0]
                 arrow.style.opacity = 0;
-            }
-        },
-        emits: ['verifytab', 'infopage'],
-        methods: {
+            },
             async getPendingVerifications() {
                 try {
                     let params = new URLSearchParams();
@@ -80,6 +77,7 @@
                 }
             },
         },
+        emits: ['verifytab', 'infopage'],
         async mounted() {
             await this.getPendingVerifications()
         }

@@ -197,7 +197,7 @@
 
 <style scoped>
     .col-one {
-        @apply text-gray-800 font-bold capitalize justify-self-end;
+        @apply text-gray-800 font-bold capitalize justify-self-end text-end;
     }
 
     .col-two {

@@ -20,7 +20,7 @@
                 <tbody>
                     <tr v-for="(buyer, index) in buyers" @mouseover="displayArrow('arrow-', index+1)" @mouseleave="hideArrow('arrow-', index+1) " @click="_buyer = buyer">
                         <td @click="profilePage = true">{{ index + 1 }}</td>
-                        <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ buyer.first_name }} {{ buyer.last_name }}</td>
+                        <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-[50%] aspect-square inline-block mr-3 border-2"/>{{ buyer.first_name }} {{ buyer.last_name }}</td>
                         <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{ buyer.email }}</td>
                         <td @click="profilePage = true">{{ buyer.created_at }}</td>
                         <!-- <td><button class="bg-green-800 rounded-xl p-2 border-2 border-black hover:bg-green-900 py-0" @click="profilePage = true">Show</button></td> -->
@@ -39,7 +39,7 @@
                 <tbody>
                     <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow--', index+1)" @mouseleave="hideArrow('arrow--', index+1)" @click="_seller = seller">
                         <td>{{ index + 1 }}</td>
-                        <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-full inline-block mr-3 border-2"/>{{ seller.store_name }}</td>
+                        <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-[50%] aspect-square inline-block mr-3 border-2"/>{{ seller.store_name }}</td>
                         <td @click="profilePage = true">{{ seller.first_name }} {{ seller.last_name}}</td>
                         <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{ seller.email }}</td>
                         <td>{{ seller.created_at }}</td>

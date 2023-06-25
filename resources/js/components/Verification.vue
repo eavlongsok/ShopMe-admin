@@ -9,7 +9,8 @@
             <tbody>
                 <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _seller=seller">
                     <td>{{ index + 1 }}</td>
-                    <td class="text-start indent-24"><img :src="seller.img_url" width="40"  class="rounded-full inline-block mr-3 border-2 aspect-square"/>{{ seller.store_name }}</td>
+                    <!-- class="text-start indent-24" -->
+                    <td><img :src="seller.img_url" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ seller.store_name }}</td>
                     <td>{{ seller.first_name }} {{ seller.last_name }}</td>
                     <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{ seller.email }}</td>
                     <!-- created_at is the date of submission -->
@@ -40,7 +41,7 @@
             VerificationInfo,
             Loader
         },
-        props: ['verifyInfoPage', 'key'],
+        props: ['verifyInfoPage', 'key', 'seller_verification'],
         emits: ['reloadVerification'],
 
         methods: {
@@ -89,6 +90,9 @@
             },
         },
         async mounted() {
+            if (this.seller_verification != null) {
+                this._seller = this.seller_verification
+            }
             if (this.verifyInfoPage) {
                 this.infoPage = true
             }

@@ -1,6 +1,8 @@
 <template>
-    <DashBoard/>
-    <VerificationSummary @verifytab="emitTabEvent" @infopage="$emit('infopage')"/>
+    <div class="mb-36">
+        <DashBoard/>
+        <VerificationSummary @verifytab="$emit('verifytab')" @infopage="reEmitInfoPage"/>
+    </div>
 </template>
 
 <script>
@@ -11,12 +13,12 @@
         components: {
             DashBoard, VerificationSummary
         },
+        emits: ['verifytab', 'infopage'],
         methods: {
-            emitTabEvent(tabID) {
-                this.$emit('verifytab', tabID)
+            reEmitInfoPage(seller) {
+                this.$emit('infopage', seller)
             }
-        },
-        emits: ['verifytab', 'infopage']
+        }
     }
 </script>
 
