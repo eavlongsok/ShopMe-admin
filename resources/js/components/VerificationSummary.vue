@@ -17,7 +17,7 @@
             </tr>
         </tbody>
     </Table>
-    <h2 class="text-2xl text-center mt-12" v-else-if="sellers.length == 0 && !loading">No pending verification!</h2>
+    <h2 class="text-2xl text-center mt-12 capitalize" v-else-if="sellers.length == 0 && !loading">No pending verifications!</h2>
 </template>
 
 <script>

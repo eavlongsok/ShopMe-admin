@@ -19,12 +19,25 @@ class Product extends Model
 
     public function toSearchableArray()
     {
-        return [
-            'product_name' => $this->product_name,
-            'category_id' => $this->category_id,
-            'is_approved' => $this->is_approved,
-            'created_at' => $this->created_at,
-            // havent run command to import this index again yet
+        $searchableArray = [
+            'product_name',
+            'category_id',
+            'is_approved',
+            'created_at',
+            // ... other searchable fields
         ];
+
+        // Exclude a specific field from searching
+        unset($searchableArray['category_id']);
+
+        return $searchableArray;
+
+        // return [
+        //     'product_name' => $this->product_name,
+        //     'category_id' => $this->category_id,
+        //     'is_approved' => $this->is_approved,
+        //     'created_at' => $this->created_at,
+        //     // havent run command to import this index again yet
+        // ];
     }
 }

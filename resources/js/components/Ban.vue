@@ -160,6 +160,8 @@ import Loader from './Loader.vue';
                     }
                 })
 
+                console.log(response.data)
+
                 if (this.userType === 1) {
                     this.buyers = response.data
                 }

@@ -79,6 +79,7 @@
                             "Authorization": "Bearer " + localStorage.getItem('admin_token')
                         }
                     })
+                    console.log(response.data)
                     this.products = response.data
                 } catch(error) {
                     console.log(error.response)

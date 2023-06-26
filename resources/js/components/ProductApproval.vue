@@ -8,7 +8,7 @@
         </div>
         <div v-if="minitab === 1" class="mt-5 ml-3">
             <p class="capitalize text-xl font-bold text-gray-700">recently approved products</p>
-            <select class="capitalize h-9 rounded outline-none hover:border-black hover:border-[1px] focus:border-[1px] focus:border-black mr-3 mt-5 focus:bg-gray-100 bg-white p-2" @change="changeCategory()">
+            <select class="capitalize h-9 rounded outline-none hover:border-black hover:border-[1px] focus:border-[1px] focus:border-black mr-3 mt-5 focus:bg-gray-100 bg-white p-2" @change="changeCategory(true)">
                 <option value=0 selected>all categories</option>
                 <option v-for="category in categories" :value="category.category_id">{{ category.category_name }}</option>
             </select>
@@ -35,7 +35,7 @@
             </Table>
         </div>
         <div v-else-if="minitab === 2" class="mt-5 ml-3">
-            <select class="capitalize h-9 rounded outline-none hover:border-black hover:border-[1px] focus:border-[1px] focus:border-black mr-3 focus:bg-gray-100 p-2 bg-white" @change="changeCategory()">
+            <select class="capitalize h-9 rounded outline-none hover:border-black hover:border-[1px] focus:border-[1px] focus:border-black mr-3 focus:bg-gray-100 p-2 bg-white" @change="changeCategory(searched)">
                 <option value=0 selected>all categories</option>
                 <option v-for="category in categories" :value="category.category_id">{{ category.category_name }}</option>
             </select>
@@ -100,9 +100,10 @@
             hideArrow(ref, index) {
                 this.$refs[ref + index][0].classList.add('opacity-0')
             },
-            async changeCategory() {
+            async changeCategory(search) {
                 this.chosenCategory = parseInt(event.target.value)
-                await this.getProducts('');
+                if (search)
+                    await this.getProducts('');
             },
             async changeTab(tabNumber) {
                 this.minitab = tabNumber;

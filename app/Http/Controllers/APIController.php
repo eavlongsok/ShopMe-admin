@@ -42,6 +42,10 @@ class APIController extends Controller
         // return response()->json(['message' => 'searching for ' . $userType], 200);
         $query = $request->q;
 
+        $query = trim($query);
+
+        $searchForID = preg_match('/^#\d*$/', $query);
+
         if ($request->has('limit'))
             $limit = $request->limit;
         else $limit = 20;
@@ -63,6 +67,12 @@ class APIController extends Controller
             if (empty($query)) {
                 $buyers = Buyer::where('status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->orderBy('first_name', $sort)->get();
                 $data = $buyers;
+            }
+            else if ($searchForID) {
+                $id = intval(substr($query, 1));
+                $buyer = Buyer::where('buyer_id', $id)->where('status', $status)->first();
+                if ($buyer === null) return response()->json([]);
+                return response()->json([$buyer], 200);
             }
             else {
                 $buyers = Buyer::search($query)->where('status', $status)->orderBy('first_name', $sort)->paginate($limit, 'page', $pageNumber);
@@ -92,6 +102,12 @@ class APIController extends Controller
             if (empty($query)) {
                 $sellers = Seller::where('status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->orderBy('first_name', $sort)->get();
                 $data = $sellers;
+            }
+            else if ($searchForID) {
+                $id = intval(substr($query, 1));
+                $seller = Seller::where('seller_id', $id)->where('status', $status)->first();
+                if ($seller === null) return response()->json([]);
+                return response()->json([$seller], 200);
             }
             else {
                 $sellers = Seller::search($query)->where('status', $status)->orderBy('first_name', $sort)->paginate($limit,'page', $pageNumber);
@@ -150,10 +166,18 @@ class APIController extends Controller
         $request->has('offset') ? $offset = $request->offset : $offset = 0;
         $query = $request->q;
 
-        // return response()->json(['offset' => $offset, 'limit' => $limit, 'query' => $query]);
+        $searchByID = preg_match('/^#\d*$/', $query);
+
         if (empty($query)) {
             $listingRequests = DB::table('listing_request')->skip($offset)->take($limit)->join('product', 'listing_request.product_id', '=', 'product.product_id')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', '=', 'seller.seller_id')->orderBy("listing_request.created_at")->where('product.is_approved', '0')->get();
-            return response($listingRequests, 200);
+            return response()->json($listingRequests, 200);
+        }
+
+        else if ($searchByID) {
+            $id = intval(substr($query, 1));
+            $listingRequests = DB::table('listing_request')->join('product', 'listing_request.product_id', '=', 'product.product_id')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', '=', 'seller.seller_id')->orderBy("listing_request.created_at")->where('listing_request.product_id', $id)->where('product.is_approved', '0')->get();
+
+            return response()->json($listingRequests, 200);
         }
 
         else {
@@ -163,6 +187,7 @@ class APIController extends Controller
                 $other_info = DB::table('product')->where('product.product_id', $result->product_id)->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', '=', 'seller.seller_id')->where('product.is_approved', '0')->get();
                 array_push($listingRequests, $other_info);
             }
+
         }
         return response($listingRequests, 200);
     }
@@ -216,12 +241,19 @@ class APIController extends Controller
             $query = $request->input('q');
         else $query = '';
 
+        $query = trim($query);
+        $searchByID = preg_match('/^#\d*$/', $query);
+
         // return response()->json(['category_id' => $category_id, 'limit' => $limit, 'page' => $page, 'query' => $query]);
 
         if ($category_id === 0) {
             // incomplete
             if (empty($query)) {
                 $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.is_approved', 1)->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+            }
+            else if ($searchByID) {
+                $id = intval(substr($query, 1));
+                $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.product_id', $id)->where('product.is_approved', 1)->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
             }
             else {
                  $results = Product::search($query)->where('is_approved', 1)->paginate($limit, 'page', $page);
@@ -241,7 +273,11 @@ class APIController extends Controller
 
         else {
             if (empty($query)) {
-                $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->where('product.category_id', $category_id)->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.is_approved', 1)->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name', 'seller.last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+                $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->where('product.category_id', $category_id)->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.is_approved', 1)->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+            }
+            else if ($searchByID) {
+                $id = intval(substr($query, 1));
+                $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.product_id', $id)->where('product.is_approved', 1)->where('category.category_id', $category_id)->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
             }
             else {
                 $results = Product::search($query)->where('category_id', $category_id)->where('is_approved', 1)->paginate($limit, 'page', $page);
@@ -250,7 +286,7 @@ class APIController extends Controller
 
                 $products = [];
                 foreach($results->items() as $result) {
-                    $product = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->where('product.product_id', $result->product_id)->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name', 'seller.last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+                    $product = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->where('product.product_id', $result->product_id)->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
 
                     array_push($products, $product);
                 }
