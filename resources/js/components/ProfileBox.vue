@@ -1,7 +1,7 @@
 <template>
     <div class="relative cursor-pointer">
-        <img src="profilepic.png" class="inline-block h-10 rounded-full outline outline-gray-500" alt="profile picture"/>
-        <p class="inline-block text-xl text-white ml-6">{{ admin_name }}<img src="side-arrow.svg" height="20" width="20"/></p>
+        <img :src="admin.img_url" class="aspect-square inline-block h-12 rounded-[50%] outline outline-gray-500" alt="profile picture"/>
+        <p class="inline-block text-xl text-white ml-6">{{ admin.first_name }} {{ admin.last_name }}<img src="side-arrow.svg" height="20" width="20"/></p>
         <div class="dropdown-menu rounded-lg">
             <ul>
                 <li class="dropdown-item hover:bg-gray-300" @click="$emit('adminprofile')">profile</li>
@@ -22,7 +22,7 @@
         data() {
             return {
                 csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                admin_name: ''
+                admin: {}
             }
         },
         emits: ['adminprofile'],
@@ -39,7 +39,7 @@
                         }
                     })
 
-                    this.admin_name = response.data.first_name + ' ' + response.data.last_name
+                    this.admin = response.data
                 }
                 catch (err) {
                     console.log(err.response.data)

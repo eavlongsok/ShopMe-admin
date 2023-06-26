@@ -7,6 +7,7 @@ use App\Models\Buyer;
 use App\Models\Product;
 use App\Models\Seller;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -264,19 +265,9 @@ class APIController extends Controller
     public function getAdminInformation(Request $request) {
         // $token = $request->bearerToken();
         $admin_id = $request->user()->admin_id;
-        $info = DB::table('admin')->where('admin_id', $admin_id)->first();
-        if ($info) {
-            $info = [
-                'admin_id' => $info->admin_id,
-                'first_name' => $info->first_name,
-                'last_name' => $info->last_name,
-                'username' => $info->username,
-                'created_at' => $info->created_at,
-                "updated_at"=> $info->updated_at,
-            ];
-            return response()->json($info, 200);
-        }
-        else return response()->json(['error' => 'something went wrong'], 500);
+        $admin = DB::table('admin')->where('admin_id', $admin_id)->take(1)->get(['admin_id', 'first_name', 'last_name', 'username', 'img_url']);
+        $admin = $admin[0];
+        return response()->json($admin, 200);
     }
 
     public function editAccount(Request $request) {
@@ -324,7 +315,29 @@ class APIController extends Controller
         $admin->save();
 
         return response()->json(['success' => 'successfully updated'], 200);
+    }
 
+    public function editLogo(Request $request) {
+        $admin = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $logo = $this->uploadImage($request, 'logo');
+
+        if (empty($logo)) {
+            return response()->json(['errors' => ['logo' => ['failed to upload logo']]], 500);
+        }
+
+        $admin->img_url = $logo;
+        $admin->save();
+
+        return response()->json(['success' => 'successfully updated', 'img_url' => $logo], 200);
     }
 
     public function createNewAdmin(Request $request) {
@@ -398,5 +411,20 @@ class APIController extends Controller
 
         if ($reject) return response()->json(['success' => 'rejected verification ID '.$ver_id]);
         else return response()->json(['error' => 'something went wrong'], 500);
+    }
+
+    public function uploadImage(Request $request, $name) {
+        $image = $request->file($name);
+            $client = new Client();
+            $response = $client->request('POST', 'https://api.imgur.com/3/image', [
+                'headers' => [
+                        'authorization' => 'Client-ID ' . env('imgur_client_id'),
+                        'content-type' => 'application/x-www-form-urlencoded',
+                    ],
+                'form_params' => [
+                        'image' => base64_encode(file_get_contents($image))
+                    ],
+                ]);
+            return json_decode($response->getBody()->getContents())->data->link;
     }
 }

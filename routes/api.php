@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::post('/create/admin', [APIController::class, 'createNewAdmin']);
     Route::get('/admin/info', [APIController::class, 'getAdminInformation']); // get the logged in admin info
     Route::post('/admin/editAccount', [APIController::class, 'editAccount']); // edit the logged in admin account
+    Route::post('/admin/editLogo', [APIController::class, 'editLogo']);
 
     Route::get('/search/{userType}', [APIController::class, 'searchUsers']);
     Route::get('/ban/{userType}', [APIController::class, 'ban']);
