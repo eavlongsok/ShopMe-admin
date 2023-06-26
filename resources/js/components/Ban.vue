@@ -39,8 +39,8 @@
                 <tbody>
                     <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow--', index+1)" @mouseleave="hideArrow('arrow--', index+1)" @click="_seller = seller">
                         <td>{{ index + 1 }}</td>
-                        <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-[50%] aspect-square inline-block mr-3 border-2"/>{{ seller.store_name }}</td>
-                        <td @click="profilePage = true">{{ seller.first_name }} {{ seller.last_name}}</td>
+                        <td @click="profilePage = true"><img src="bingchilling.jpeg" width="40"  class="rounded-[50%] aspect-square inline-block mr-3 border-2"/>{{ seller.store_name === null ? '##N/A##' : seller.store_name  }}</td>
+                        <td @click="profilePage = true">{{ seller.seller_first_name }} {{ seller.seller_last_name}}</td>
                         <td :ref="'email' + (index + 1)" @click="copyToClipBoard(index+1)">{{ seller.email }}</td>
                         <td>{{ seller.created_at }}</td>
                         <td class="hover-on-arrow w-24" title="See More Details" @click="profilePage = true"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow--' + (index + 1)"/></td>

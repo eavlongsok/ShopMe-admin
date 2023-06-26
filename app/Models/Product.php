@@ -16,28 +16,15 @@ class Product extends Model
         return 'product_index';
     }
 
-
     public function toSearchableArray()
     {
-        $searchableArray = [
-            'product_name',
-            'category_id',
-            'is_approved',
-            'created_at',
-            // ... other searchable fields
+        return [
+            'product_id' => $this->product_id,
+            'seller_id' => $this->seller_id,
+            'product_name' => $this->product_name,
+            'is_approved' => $this->is_approved,
+            'category_id' => $this->category_id,
         ];
 
-        // Exclude a specific field from searching
-        unset($searchableArray['category_id']);
-
-        return $searchableArray;
-
-        // return [
-        //     'product_name' => $this->product_name,
-        //     'category_id' => $this->category_id,
-        //     'is_approved' => $this->is_approved,
-        //     'created_at' => $this->created_at,
-        //     // havent run command to import this index again yet
-        // ];
     }
 }

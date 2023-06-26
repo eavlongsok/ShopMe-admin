@@ -1,9 +1,9 @@
 <template>
-    <div class="cursor-pointer" @click="$emit('backToMain')">
+    <div class="cursor-pointer fixed" @click="$emit('backToMain')">
         <img src="back-arrow.png" width="16" class="inline-block">
         <span class="text-lg align-middle ml-2 underline hover:font-bold">Back</span>
     </div>
-    <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10">
+    <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10 mb-36">
         <div class="w-full col-span-2">
             <img src="bingchilling.jpeg" class="w-full"/>
             <button class="block bg-red-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-red-800 font-bold text-white mt-5 w-32 ml-auto select-none" @click="handleClick">{{user.status == 1 ? 'Ban' : 'Unban'}}</button>
@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <div class="my-row" v-if="userType === 2">
+            <div class="my-row" v-if="userType === 2 && user.ver_id !== null">
                 <div class="col-one">
                     store name:
                 </div>
@@ -41,7 +41,7 @@
                     name:
                 </div>
                 <div class="col-two">
-                    {{user.first_name}} {{user.last_name}}
+                    {{ userType === 1 ? user.first_name + '' + user.last_name : user.seller_first_name + ' ' + user.seller_last_name }}
                 </div>
             </div>
 
@@ -72,7 +72,7 @@
                 </div>
             </div>
 
-            <div class="my-row" v-if="userType === 2">
+            <div class="my-row" v-if="userType === 2 && user.ver_id !== null">
                 <div class="col-one">
                     verified at:
                 </div>
@@ -81,12 +81,12 @@
                 </div>
             </div>
 
-            <div class="my-row" v-if="userType === 2">
+            <div class="my-row" v-if="userType === 2 && user.ver_id !== null">
                 <div class="col-one">
                     verified by:
                 </div>
                 <div class="col-two">
-                    {{user.verified_by}} (AD{{ user.verifier_ID }})
+                    {{user.admin_first_name}} {{ user.admin_last_name }} (ID: {{ user.verified_by }})
                 </div>
             </div>
 
@@ -103,41 +103,26 @@
                 </div>
             </div> -->
 
-            <div class="my-row" v-if="userType === 2">
+            <div class="my-row" v-if="user.address_id !== null">
                 <div class="col-one">
-                    business address:
+                    address:
                 </div>
                 <div class="col-two">
-                    {{user.business_address}}
+                    <p>Building Number: {{user.building_number}}</p>
+                    <p>Street Number: {{ user.street_number }}</p>
+                    <p>{{ user.city }}, {{ user.region_name }}</p>
                 </div>
             </div>
 
-            <div class="my-row" v-if="userType === 2">
+            <div class="my-row" v-if="userType === 2 && user.ver_id !== null">
                 <div class="col-one">
-                    business info:
+                    description:
                 </div>
                 <div class="col-two">
                     {{user.business_info}}
                 </div>
             </div>
 
-            <div class="my-row" v-if="userType === 1">
-                <div class="col-one">
-                    orders:
-                </div>
-                <div class="col-two">
-                    {{user.orders}}
-                </div>
-            </div>
-
-            <div class="my-row" v-if="userType === 2">
-                <div class="col-one">
-                    recent sales:
-                </div>
-                <div class="col-two">
-                    {{user.recent_sales}}
-                </div>
-            </div>
         </div>
     </div>
 </template>

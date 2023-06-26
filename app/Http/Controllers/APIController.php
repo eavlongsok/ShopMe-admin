@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Buyer;
 use App\Models\Product;
 use App\Models\Seller;
+use App\Models\Verification;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -65,7 +66,9 @@ class APIController extends Controller
 
         if ($userType == 'buyer') {
             if (empty($query)) {
-                $buyers = Buyer::where('status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->orderBy('first_name', $sort)->get();
+                $buyers = Buyer::where('buyer.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('address', 'address.buyer_id', 'buyer.buyer_id')->leftJoin('region', 'address.region_id', 'region.region_id')->orderBy('first_name', $sort)->get([
+                    'buyer.buyer_id', 'buyer.first_name', 'buyer.last_name', 'buyer.email', 'buyer.status', 'buyer.created_at', 'buyer.date_of_birth', 'buyer.banned_at', 'buyer.banned_by', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name'
+                ]);
                 $data = $buyers;
             }
             else if ($searchForID) {
@@ -78,59 +81,47 @@ class APIController extends Controller
                 $buyers = Buyer::search($query)->where('status', $status)->orderBy('first_name', $sort)->paginate($limit, 'page', $pageNumber);
                 $data = $buyers->items();
             }
-            $filteredBuyers = [];
 
-            foreach ($data as $buyer) {
-                $newBuyer = [
-                    'buyer_id' => $buyer->buyer_id,
-                    'first_name' => $buyer->first_name,
-                    'last_name' => $buyer->last_name,
-                    'email' => $buyer->email,
-                    'status' => $buyer->status,
-                    'created_at' => $buyer->created_at,
-                    'date_of_birth' => $buyer->date_of_birth,
-                    'banned_at' => $buyer->banned_at,
-                    'banned_by' => $buyer->banned_by,
-                ];
-                array_push($filteredBuyers, $newBuyer);
-            }
-            return response($filteredBuyers);
+            return response($data);
 
         }
 
         if ($userType == 'seller') {
             if (empty($query)) {
-                $sellers = Seller::where('status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->orderBy('first_name', $sort)->get();
+                $sellers = Seller::where('seller.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->leftJoin('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
+
                 $data = $sellers;
             }
             else if ($searchForID) {
                 $id = intval(substr($query, 1));
-                $seller = Seller::where('seller_id', $id)->where('status', $status)->first();
+                $seller = Seller::where('seller.seller_id', $id)->where('seller.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
+
                 if ($seller === null) return response()->json([]);
-                return response()->json([$seller], 200);
+                $data = $seller;
             }
             else {
+                $verifications = Verification::search($query)->paginate($limit,'page', $pageNumber);
+
+                $allVerificationResult = $verifications->items();
+                $data = [];
+
+                foreach($allVerificationResult as $verification) {
+                    $_seller = Seller::where('seller.seller_id', $verification->seller_id)->where('seller.status', $status)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->join('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
+                    array_push($data, $_seller);
+                }
+
                 $sellers = Seller::search($query)->where('status', $status)->orderBy('first_name', $sort)->paginate($limit,'page', $pageNumber);
-                $data = $sellers->items();
-            }
-            $filteredSellers = [];
+                $allSellers = $sellers->items();
 
-            foreach ($data as $seller) {
-                $newSeller = [
-                    'seller_id' => $seller->seller_id,
-                    'first_name' => $seller->first_name,
-                    'last_name' => $seller->last_name,
-                    'email' => $seller->email,
-                    'status' => $seller->status,
-                    'created_at' => $seller->created_at,
-                    'date_of_birth' => $seller->date_of_birth,
-                    'banned_at' => $seller->banned_at,
-                    'banned_by' => $seller->banned_by,
-                ];
-                array_push($filteredSellers, $newSeller);
+                foreach ($allSellers as $seller) {
+                    // return response()->json($seller, 200);
+                    $_seller = Seller::where('seller.seller_id', $seller->seller_id)->where('seller.status', $status)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
+                    array_push($data, $_seller[0]);
+                }
+                return response()->json($data, 200);
             }
 
-            return response($filteredSellers);
+            return response($data);
         }
     }
 

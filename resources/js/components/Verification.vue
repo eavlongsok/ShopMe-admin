@@ -7,7 +7,7 @@
         </div>
         <Table class="w-11/12 mt-10 mb-5" :fields="fields" v-if="sellers.length != 0">
             <tbody>
-                <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _seller=seller">
+                <tr v-for="(seller, index) in sellers" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _seller=seller;">
                     <td>{{ index + 1 }}</td>
                     <!-- class="text-start indent-24" -->
                     <td><img :src="seller.img_url" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ seller.store_name }}</td>
