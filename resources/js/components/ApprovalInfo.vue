@@ -49,7 +49,7 @@
                     Price:
                 </div>
                 <div class="col-two">
-                    {{ formatToCurrency(product.price) }}
+                    {{ formattedPrice }}
                 </div>
             </div>
 
@@ -132,8 +132,12 @@
                 style: 'currency',
                 currency: 'USD',
                 });
-
                 return formatter.format(amount);
+            }
+        },
+        computed: {
+            formattedPrice() {
+                return this.formatToCurrency(this.product.price);
             }
         }
     }

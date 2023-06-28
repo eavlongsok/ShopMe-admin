@@ -1,6 +1,6 @@
 <template>
     <div class="mt-16">
-        <Header @adminprofile="active = 0" />
+        <Header @adminprofile="active = 0"/>
         <div>
             <Sidebar class="fixed w-1/5 z-[1]" :active="active" @changetab="changeTab"/>
             <div class="w-[79%] ml-[21%] pt-5">
@@ -9,9 +9,9 @@
                 <Ban v-else-if="active === 3" />
                 <BannedUsers v-else-if="active === 4" />
                 <Approve v-else-if="active === 5" />
-                <ProductApproval v-else-if="active === 6" />
-                <ProductManagement v-else-if="active === 7" />
-                <RemovedProducts v-else-if="active === 8" />
+                <ProductApproval v-else-if="active === 6" :categories="categories"/>
+                <ProductManagement v-else-if="active === 7" :categories="categories"/>
+                <BannedProducts v-else-if="active === 8" :categories="categories" />
                 <AdminProfile v-else-if="active === 0" @changetab="changeTab"/>
                 <EditAdminProfile v-else-if="active === -1" @changetab="changeTab"/>
             </div>
@@ -27,7 +27,7 @@
     import BannedUsers from './components/BannedUsers.vue'
     import Login from './components/Login.vue'
     import Ban from './components/Ban.vue'
-    import RemovedProducts from './components/RemovedProducts.vue'
+    import BannedProducts from './components/BannedProducts.vue'
     import ProductManagement from './components/ProductManagement.vue'
     import ProductApproval from './components/ProductApproval.vue'
     import Approve from './components/Approve.vue'
@@ -41,25 +41,26 @@
                 active: 1,
                 verifyInfoPage: false,
                 session_id: null,
-                seller_verification: null
+                seller_verification: null,
+                categories: []
             }
         },
         components: {
-    Sidebar,
-    Header,
-    Home,
-    Verification,
-    BannedUsers,
-    Login,
-    Ban,
-    ProductManagement,
-    RemovedProducts,
-    ProductManagement,
-    ProductApproval,
-    Approve,
-    AdminProfile,
-    EditAdminProfile
-},
+            Sidebar,
+            Header,
+            Home,
+            Verification,
+            BannedUsers,
+            Login,
+            Ban,
+            ProductManagement,
+            BannedProducts,
+            ProductManagement,
+            ProductApproval,
+            Approve,
+            AdminProfile,
+            EditAdminProfile
+        },
         setup() {
             const verificationReloadKey = ref(0)
             const forceRerender = () => {
@@ -97,10 +98,22 @@
                 this.verifyInfoPage = true
                 this.changeTab(2)
                 this.seller_verification = seller
-            }
+            },
+            async getCategories() {
+                try {
+                    const response = await axios.get('/api/getCategories', {
+                        headers:{
+                            'Authorization': 'Bearer ' + localStorage.getItem('admin_token'),
+                        }
+                    })
+                    this.categories = response.data.categories
+                } catch (error) {
+                    console.log(error)
+                }
+            },
         },
-        mounted() {
-            // console.log(this.getCookie('XSRF-TOKEN'))
+        async mounted() {
+            await this.getCategories()
         }
     }
 </script>

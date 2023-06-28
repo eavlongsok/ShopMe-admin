@@ -23,11 +23,11 @@
     }
 
     :slotted(td), td {
-        @apply py-2;
+        @apply py-2 max-w-[100px] whitespace-nowrap overflow-hidden;
     }
 
     :slotted(tr) {
-        @apply cursor-pointer hover:font-bold;
+        @apply cursor-pointer;
     }
 
     :slotted(tr:nth-child(even)) {

@@ -23,6 +23,7 @@ class Product extends Model
             'seller_id' => $this->seller_id,
             'product_name' => $this->product_name,
             'is_approved' => $this->is_approved,
+            'banned_by' => $this->banned_by,
             'category_id' => $this->category_id,
         ];
 

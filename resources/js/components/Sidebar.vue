@@ -9,7 +9,7 @@
             <li @click="emitTabEvent(5)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 5}">approve products</li>
             <li @click="emitTabEvent(6)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 6}">approved products</li>
             <li @click="emitTabEvent(7)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 7}">Product Management</li>
-            <li @click="emitTabEvent(8)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 8}">Removed products</li>
+            <li @click="emitTabEvent(8)" class="tab" :class="{'bg-blue-500 text-gray-100': active === 8}">Banned products</li>
         </ul>
     </div>
 </template>

@@ -43,7 +43,7 @@
                     <br/>
 
                     <div class="text-md">
-                        <input name='remember' type="checkbox" class="mt-4 scale-150" @change="remember = !remember" value=1 />
+                        <input name='remember' id="remember" type="checkbox" class="mt-4 scale-150" @change="remember = !remember" value=1 />
                         <label for='remember' class="ml-3">Remember me</label>
                     </div>
 

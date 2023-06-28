@@ -134,7 +134,7 @@
         emits: ['backToMain', 'toggleBan'],
         methods: {
             async ban() {
-                const route = "api/ban/" + (this.userType == 1 ? 'buyer' : 'seller')
+                const route = "api/ban/user" + (this.userType == 1 ? 'buyer' : 'seller')
                 const params = new URLSearchParams();
                 params.append('id', (this.userType == 1 ? this.user.buyer_id : this.user.seller_id));
 
@@ -152,7 +152,7 @@
                 }
             },
             async unban() {
-                const route = "api/unban/" + (this.userType == 1 ? 'buyer' : 'seller')
+                const route = "api/unban/user" + (this.userType == 1 ? 'buyer' : 'seller')
                 const params = new URLSearchParams();
                 params.append('id', (this.userType == 1 ? this.user.buyer_id : this.user.seller_id));
 

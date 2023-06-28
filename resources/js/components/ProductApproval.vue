@@ -57,7 +57,8 @@
                     <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
                         <td>{{ index + 1 }}</td>
                         <td>{{ product.product_id }}</td>
-                        <td>{{ product.product_name }}</td>
+                        <!-- <td>{{ product.product_name }}</td> -->
+                        <td><img :src="product.img_url" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
                         <td>{{ product.category_name }}</td>
                         <td>{{ product.store_name }}</td>
                         <td>{{ product.approved_at }}</td>
@@ -79,7 +80,6 @@
         data() {
             return {
                 minitab: 1,
-                categories: {},
                 loaded: false,
                 searched: false,
                 infoPage: false,
@@ -93,6 +93,7 @@
         components: {
             SearchBox, Table, ApprovalInfo, Loader
         },
+        props: ['categories'],
         methods: {
             displayArrow(ref, index) {
                 this.$refs[ref + index][0].classList.remove('opacity-0')
@@ -124,7 +125,7 @@
                             'Authorization': 'Bearer ' + localStorage.getItem('admin_token'),
                         }
                     })
-                    this.categories = response.data
+                    this.categories = response.data.categories
                 } catch (error) {
                     console.log(error)
                 }
@@ -156,7 +157,6 @@
             }
         },
         async mounted() {
-            await this.getCategories()
             await this.getProducts('')
         }
     }

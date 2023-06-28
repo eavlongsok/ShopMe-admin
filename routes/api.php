@@ -27,8 +27,8 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::post('/admin/editLogo', [APIController::class, 'editLogo']);
 
     Route::get('/search/{userType}', [APIController::class, 'searchUsers']);
-    Route::get('/ban/{userType}', [APIController::class, 'ban']);
-    Route::get('/unban/{userType}', [APIController::class, 'unban']);
+    Route::get('/ban/user/{userType}', [APIController::class, 'ban']);
+    Route::get('/unban/user/{userType}', [APIController::class, 'unban']);
     Route::get('/listingRequests', [APIController::class, 'listingRequests']);
     Route::get('/approveProduct', [APIController::class, 'approveProduct']);
     Route::get('/unapproveProduct', [APIController::class, 'unapproveProduct']);
@@ -38,4 +38,8 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/rejectVerification', [APIController::class, 'rejectVerification']);
     Route::get('/getCategories', [APIController::class, 'getCategories']);
     Route::get('/getProducts', [APIController::class, 'getProducts']);
+    Route::get('/ban/product', [APIController::class, 'banProduct']);
+    Route::get('/unban/product', [APIController::class, 'unbanProduct']);
+    Route::get('/remove/product', [APIController::class, 'removeProduct']);
+    Route::get('/getBannedProducts', [APIController::class, 'getBannedProducts']);
 });
