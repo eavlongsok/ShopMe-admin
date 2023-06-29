@@ -1,5 +1,5 @@
 <template>
-    <table class="table-auto ml-3 text-lg">
+    <table class="table-auto mx-auto mt-10 text-lg">
         <thead class="capitalize">
             <tr>
                 <td v-for="item in fields">{{ item }}</td>

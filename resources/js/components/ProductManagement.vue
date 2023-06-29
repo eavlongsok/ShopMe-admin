@@ -23,8 +23,8 @@
 
         <h2 class="text-xl text-center mt-16 font-bold" v-if="searched && products.length === 0">No product was found</h2>
 
-        <div v-else-if="searched && products.length > 0">
-            <Table class="w-11/12 mt-3 mb-5" :fields="fields">
+        <div v-else-if="searched && products.length > 0" class="mb-14">
+            <Table class="w-11/12 mb-5 mx-auto" :fields="fields">
                 <tbody>
                     <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
                         <td>{{ product.product_id }}</td>
@@ -36,10 +36,7 @@
                     </tr>
                 </tbody>
             </Table>
-
-            <div class="mx-auto h-12 flex justify-center bg-red-100">
-                
-            </div>
+            <Pagination :totalPages = "Math.ceil(this.products.length / limit)" :page="page" @changePage="changePage"/>
         </div>
     </div>
 </template>
@@ -49,6 +46,7 @@
     import SearchBox from './SearchBox.vue';
     import Table from './Table.vue';
     import Loader from './Loader.vue';
+    import Pagination from './Pagination.vue';
 
     export default {
         name: 'ProductManagement',
@@ -61,14 +59,17 @@
                 chosenCategory: 0,
                 fields: ['ID', 'Product Name', 'Price', 'Store Name', 'Date Added', ' '],
                 products: [],
-                _product: {}
+                _product: {},
+                page: 1,
+                limit: 20,
             }
         },
         components: {
             SearchBox,
             Table,
             ProductInfo,
-            Loader
+            Loader,
+            Pagination
         },
         props: ['categories'],
         methods: {
@@ -80,7 +81,7 @@
             },
             async changeCategory() {
                 this.chosenCategory = parseInt(event.target.value)
-                await this.getProducts('');
+                if (this.searched) await this.getProducts()
             },
             formatToCurrency(amount){
                 const formatter = new Intl.NumberFormat('en-US', {
@@ -89,16 +90,33 @@
                 });
                 return formatter.format(amount);
             },
+            async changePage(pageNumber) {
+                if (pageNumber === '...') return
+                if (pageNumber === '+') {
+                    if (this.page == this.products.length) return
+                    this.page = this.page + 1
+                }
+                else if (pageNumber === '-') {
+                    if (this.page == 1) return
+                    this.page = this.page - 1
+                }
+                else this.page = parseInt(pageNumber)
+
+                await this.getProducts()
+            },
             async getProducts(query) {
-                const page = 1;
-                const limit = 20;
-                this.query = query
+                if (query !== undefined)
+                    this.query = query
+                else if (this.query === undefined)
+                    this.query = ''
                 this.products = []
                 this.loaded = false
                 this.searched = true
                 let params = new URLSearchParams();
                 params.append('q', this.query)
                 params.append('category_id', this.chosenCategory)
+                params.append('limit', this.limit)
+                params.append('page', this.page)
 
                 try {
                     const response = await axios.get('/api/getProducts', {
@@ -110,15 +128,13 @@
 
                     console.log(response.data)
                     this.products = response.data
+
                     this.loaded = true
                 } catch(err) {
                     console.log(err.response.data)
                 }
             },
         },
-        async mounted() {
-
-        }
     }
 </script>
 
