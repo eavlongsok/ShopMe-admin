@@ -1,10 +1,13 @@
 <template>
     <h2 class="heading-2 mb-3">Dashboard</h2>
-    <div class="grid lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 justify-evenly gap-5 capitalize">
-        <Card title="title 1" value="10" color="red" />
-        <Card title="title 2" value="20" color="blue" />
-        <Card title="title 3" value="30" color="magenta" />
-        <Card title="title 4" value="40" color="green" />
+    <div class="flex justify-center items-center h-[300px]" v-if="!loaded">
+        <Loader :size="4" :thickness="0.4"/>
+    </div>
+    <div class="grid lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 justify-evenly gap-5 capitalize" v-else>
+        <Card title="Total Users" :value="totalCountAllTime" color="red" />
+        <Card title="New Users (30 days)" :value="totalCount30Days" color="green" />
+        <Card title="New Buyers (30 days)" :value="buyerCount30Days" color="blue" />
+        <Card title="New Sellers (30 days)" :value="sellerCount30Days" color="magenta" />
         <Card title="title 5" value="50" color="red" />
         <Card title="title 6" value="60" color="blue" />
         <Card title="title 7" value="70" color="magenta" />
@@ -14,10 +17,43 @@
 
 <script>
     import Card from './Card.vue'
+    import Loader from './Loader.vue'
     export default {
         name: 'DashBoard',
+        data() {
+            return {
+                loaded: false,
+                buyerCount30Days: 0,
+                sellerCount30Days: 0,
+                totalCount30Days: 0,
+                totalCountAllTime: 0,
+            }
+        },
         components: {
-            Card
+            Card, Loader
+        },
+        methods: {
+            async getRegisteredUsersLast30Days() {
+                try {
+                    const response = await axios.get('/api/info/monthlyaccounts', {
+                        headers: {
+                            'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+                        }
+                    })
+                    this.buyerCount30Days = response.data.buyerCount30Days
+                    this.sellerCount30Days = response.data.sellerCount30Days
+                    this.totalCount30Days = response.data.totalCount30Days
+                    this.totalCountAllTime = response.data.totalCountAllTime
+
+                }
+                catch(err) {
+                    console.log(err.response)
+                }
+            }
+        },
+        async mounted() {
+            await this.getRegisteredUsersLast30Days();
+            this.loaded = true
         }
     }
 </script>

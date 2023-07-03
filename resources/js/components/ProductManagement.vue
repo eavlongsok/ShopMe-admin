@@ -21,23 +21,25 @@
             <Loader :size="4" :thickness="0.4"/>
         </div>
 
-        <h2 class="text-xl text-center mt-16 font-bold" v-if="searched && products.length === 0">No product was found</h2>
+        <h2 class="text-xl text-center mt-16 font-bold" v-if="searched && products.length === 0 && loaded">No product was found</h2>
 
-        <div v-else-if="searched && products.length > 0" class="mb-14">
-            <Table class="w-11/12 mb-5 mx-auto" :fields="fields">
-                <tbody>
-                    <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
-                        <td>{{ product.product_id }}</td>
-                        <td><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
-                        <td>{{ formatToCurrency(product.price) }}</td>
-                        <td>{{ product.store_name }}</td>
-                        <td>{{ product.approved_at }}</td>
-                        <td class="hover-on-arrow w-24" title="More details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
-                    </tr>
-                </tbody>
-            </Table>
-            <Pagination :totalPages = "Math.ceil(this.products.length / limit)" :page="page" @changePage="changePage"/>
-        </div>
+        <template v-else-if="searched && products.length > 0 && loaded">
+            <div class="mb-14">
+                <Table class="w-11/12 mb-5 mx-auto" :fields="fields">
+                    <tbody>
+                        <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
+                            <td>{{ product.product_id }}</td>
+                            <td><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
+                            <td>{{ formatToCurrency(product.price) }}</td>
+                            <td>{{ product.store_name }}</td>
+                            <td>{{ product.approved_at }}</td>
+                            <td class="hover-on-arrow w-24" title="More details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
+                        </tr>
+                    </tbody>
+                </Table>
+                <Pagination :totalPages = "Math.ceil(total / limit)" :page="page" @changePage="changePage"/>
+            </div>
+        </template>
     </div>
 </template>
 
@@ -62,6 +64,7 @@
                 _product: {},
                 page: 1,
                 limit: 20,
+                total: 0,
             }
         },
         components: {
@@ -93,7 +96,7 @@
             async changePage(pageNumber) {
                 if (pageNumber === '...') return
                 if (pageNumber === '+') {
-                    if (this.page == this.products.length) return
+                    if (this.page == this.total) return
                     this.page = this.page + 1
                 }
                 else if (pageNumber === '-') {
@@ -102,13 +105,10 @@
                 }
                 else this.page = parseInt(pageNumber)
 
-                await this.getProducts()
+                await this.getProducts('')
             },
             async getProducts(query) {
-                if (query !== undefined)
-                    this.query = query
-                else if (this.query === undefined)
-                    this.query = ''
+                this.query = query
                 this.products = []
                 this.loaded = false
                 this.searched = true
@@ -127,8 +127,8 @@
                     })
 
                     console.log(response.data)
-                    this.products = response.data
-
+                    this.products = response.data.products
+                    this.total = response.data.total
                     this.loaded = true
                 } catch(err) {
                     console.log(err.response.data)

@@ -19,20 +19,22 @@
 
             <h2 class="text-xl text-center mt-16 font-bold" v-else-if="loaded && products.length === 0">No product was found</h2>
 
-            <Table class="w-11/12 mt-3 mb-5" :fields="fields" v-else-if="loaded && products.length > 0">
-                <tbody>
-                    <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
-                        <td>{{ index + 1 }}</td>
-                        <td>{{ product.product_id }}</td>
-                        <td>{{ product.product_name }}</td>
-                        <td>{{ product.category_name }}</td>
-                        <!-- class="text-start indent-24" -->
-                        <td><img :src="product.store_logo" width="40"  class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.store_name }}</td>
-                        <td>{{ product.approved_at }}</td>
-                        <td class="hover-on-arrow w-24" title="More details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
-                    </tr>
-                </tbody>
-            </Table>
+            <template v-else-if="loaded && products.length > 0">
+                <Table class="w-11/12 mt-3 mb-5" :fields="fields">
+                    <tbody>
+                        <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
+                            <td>{{ product.product_id }}</td>
+                            <td><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
+                            <td>{{ product.category_name }}</td>
+                            <!-- class="text-start indent-24" -->
+                            <td>{{ product.store_name }}</td>
+                            <td>{{ product.approved_at }}</td>
+                            <td class="hover-on-arrow w-24" title="More details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
+                        </tr>
+                    </tbody>
+                </Table>
+                <Pagination :totalPages = "Math.ceil(total / limit)" :page="page" @changePage="changePage"/>
+            </template>
         </div>
         <div v-else-if="minitab === 2" class="mt-5 ml-3">
             <select class="capitalize h-9 rounded outline-none hover:border-black hover:border-[1px] focus:border-[1px] focus:border-black mr-3 focus:bg-gray-100 p-2 bg-white" @change="changeCategory(searched)">
@@ -52,20 +54,22 @@
                 <h2 class="text-xl font-bold">No product was found</h2>
             </div>
 
-            <Table class="w-11/12 mt-3 mb-5" :fields="fields" v-else-if="loaded && products.length > 0">
-                <tbody>
-                    <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
-                        <td>{{ index + 1 }}</td>
-                        <td>{{ product.product_id }}</td>
-                        <!-- <td>{{ product.product_name }}</td> -->
-                        <td><img :src="product.img_url" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
-                        <td>{{ product.category_name }}</td>
-                        <td>{{ product.store_name }}</td>
-                        <td>{{ product.approved_at }}</td>
-                        <td class="hover-on-arrow w-24" title="More details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
-                    </tr>
-                </tbody>
-            </Table>
+            <template v-else-if="loaded && products.length > 0">
+                <Table class="w-11/12 mt-3 mb-5" :fields="fields">
+                    <tbody>
+                        <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
+                            <td>{{ product.product_id }}</td>
+                            <!-- <td>{{ product.product_name }}</td> -->
+                            <td><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
+                            <td>{{ product.category_name }}</td>
+                            <td>{{ product.store_name }}</td>
+                            <td>{{ product.approved_at }}</td>
+                            <td class="hover-on-arrow w-24" title="More details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
+                        </tr>
+                    </tbody>
+                </Table>
+                <Pagination :totalPages = "Math.ceil(total / limit)" :page="page" @changePage="changePage"/>
+            </template>
         </div>
     </div>
 </template>
@@ -75,6 +79,7 @@
     import Table from './Table.vue';
     import ApprovalInfo from './ApprovalInfo.vue';
     import Loader from './Loader.vue';
+    import Pagination from './Pagination.vue';
     export default {
         name: "ProductApproval",
         data() {
@@ -85,13 +90,16 @@
                 infoPage: false,
                 query: '',
                 chosenCategory: 0,
-                fields: ['No', 'ID', 'Product Name', 'Category', 'Store Name', 'Approval Time', ' '],
+                fields: ['ID', 'Product Name', 'Category', 'Store Name', 'Approval Time', ' '],
                 products: [],
-                _product: {}
+                _product: {},
+                page: 1,
+                limit: 20,
+                total: 0,
             }
         },
         components: {
-            SearchBox, Table, ApprovalInfo, Loader
+            SearchBox, Table, ApprovalInfo, Loader, Pagination
         },
         props: ['categories'],
         methods: {
@@ -118,6 +126,20 @@
                     await this.getProducts('')
                 }
             },
+            async changePage(pageNumber) {
+                if (pageNumber === '...') return
+                if (pageNumber === '+') {
+                    if (this.page == this.total) return
+                    this.page = this.page + 1
+                }
+                else if (pageNumber === '-') {
+                    if (this.page == 1) return
+                    this.page = this.page - 1
+                }
+                else this.page = parseInt(pageNumber)
+
+                await this.getProducts('')
+            },
             async getCategories() {
                 try {
                     const response = await axios.get('/api/getCategories', {
@@ -127,12 +149,10 @@
                     })
                     this.categories = response.data.categories
                 } catch (error) {
-                    console.log(error)
+                    console.log(error.response)
                 }
             },
             async getProducts(query) {
-                const page = 1;
-                const limit = 20;
                 this.query = query
                 this.products = []
                 this.loaded = false
@@ -140,6 +160,8 @@
                 let params = new URLSearchParams();
                 params.append('q', this.query)
                 params.append('category_id', this.chosenCategory)
+                params.append('page', this.page)
+                params.append('limit', this.limit)
 
                 try {
                     const response = await axios.get('/api/getProducts', {
@@ -149,7 +171,9 @@
                         }
                     })
 
-                    this.products = response.data
+                    console.log(response.data)
+                    this.products = response.data.products
+                    this.total = response.data.total
                     this.loaded = true
                 } catch(err) {
                     console.log(err.response.data)
