@@ -5,7 +5,7 @@
     </div>
     <div class="grid grid-cols-5 gap-6 mx-auto mt-5 w-5/6 select-text pb-10 mb-36">
         <div class="w-full col-span-2">
-            <img src="bingchilling.jpeg" class="w-full"/>
+            <img :src="user.img_url == null ? '/profilepic.png' : user.img_url" class="w-full"/>
             <button class="block bg-red-600 rounded-xl text-xl p-2 border-2 border-black hover:bg-red-800 font-bold text-white mt-5 w-32 ml-auto select-none" @click="handleClick">{{user.status == 1 ? 'Ban' : 'Unban'}}</button>
         </div>
         <div class="col-span-3">
@@ -134,7 +134,7 @@
         emits: ['backToMain', 'toggleBan'],
         methods: {
             async ban() {
-                const route = "api/ban/user" + (this.userType == 1 ? 'buyer' : 'seller')
+                const route = "api/ban/user/" + (this.userType == 1 ? 'buyer' : 'seller')
                 const params = new URLSearchParams();
                 params.append('id', (this.userType == 1 ? this.user.buyer_id : this.user.seller_id));
 
@@ -152,7 +152,7 @@
                 }
             },
             async unban() {
-                const route = "api/unban/user" + (this.userType == 1 ? 'buyer' : 'seller')
+                const route = "api/unban/user/" + (this.userType == 1 ? 'buyer' : 'seller')
                 const params = new URLSearchParams();
                 params.append('id', (this.userType == 1 ? this.user.buyer_id : this.user.seller_id));
 

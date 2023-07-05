@@ -42,4 +42,5 @@ Route::group(['middleware' => 'auth:sanctum'], function() {
     Route::get('/remove/product', [APIController::class, 'removeProduct']);
     Route::get('/getBannedProducts', [APIController::class, 'getBannedProducts']);
     Route::get('/info/monthlyaccounts', [APIController::class, 'getAllAccountInformation']);
+    Route::get('/info/monthlyproducts', [APIController::class, 'getAllProductInformation']);
 });

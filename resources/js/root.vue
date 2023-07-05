@@ -74,6 +74,10 @@
             changeTab(tabID) {
                 this.active = tabID
                 window.scrollTo(0,0)
+                if (tabID !== 2) {
+                    this.verifyInfoPage = false
+                    this.seller_verification = null
+                }
             },
 
             getCookie(name) {

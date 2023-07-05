@@ -29,7 +29,7 @@
                     <tbody>
                         <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
                             <td>{{ product.product_id }}</td>
-                            <td><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
+                            <td class="text-start indent-10"><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
                             <td>{{ formatToCurrency(product.price) }}</td>
                             <td>{{ product.store_name }}</td>
                             <td>{{ product.approved_at }}</td>
@@ -96,7 +96,7 @@
             async changePage(pageNumber) {
                 if (pageNumber === '...') return
                 if (pageNumber === '+') {
-                    if (this.page == this.total) return
+                    if (this.page == Math.ceil(this.total / this.limit)) return
                     this.page = this.page + 1
                 }
                 else if (pageNumber === '-') {

@@ -13,7 +13,7 @@
                 <tbody>
                     <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index)" @mouseleave="hideArrow('arrow', index)" @click="infoPage = true; _product=product">
                         <td>{{ product.product_id }}</td>
-                        <td>{{ product.product_name }}</td>
+                        <td class="text-start indent-10">{{ product.product_name }}</td>
                         <td>{{ product.category_name }}</td>
                         <td>{{ product.store_name }}</td>
                         <td>{{ product.quantity }}</td>
@@ -100,8 +100,9 @@
                             "Authorization": "Bearer " + localStorage.getItem('admin_token')
                         }
                     })
+                    console.log(response.data)
                     this.products = response.data.products
-                    this.total = reponse.data.total
+                    this.total = response.data.total
                 } catch(error) {
                     console.log(error.response)
                 }

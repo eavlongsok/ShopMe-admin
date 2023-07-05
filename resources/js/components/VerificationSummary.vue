@@ -61,14 +61,14 @@
             async getPendingVerifications() {
                 try {
                     let params = new URLSearchParams();
-                    params.append('limit', 20);
+                    params.append('limit', 10);
                     params.append('page', 1);
 
                     const response = await axios.get('/api/verification', {params: params, headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
                     }});
 
-                    this.sellers = response.data.data;
+                    this.sellers = response.data.sellers;
                     this.loading = false;
                 }
 

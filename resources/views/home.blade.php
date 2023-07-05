@@ -13,6 +13,7 @@
 
         <script src="{{mix("js/app.js")}}" defer></script>
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="referrer" content="no-referrer">
     </head>
 
     <body>

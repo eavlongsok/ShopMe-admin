@@ -24,16 +24,15 @@
                     <tbody>
                         <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
                             <td>{{ product.product_id }}</td>
-                            <td><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
+                            <td class="text-start indent-10"><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
                             <td>{{ product.category_name }}</td>
-                            <!-- class="text-start indent-24" -->
                             <td>{{ product.store_name }}</td>
                             <td>{{ product.approved_at }}</td>
                             <td class="hover-on-arrow w-24" title="More details"><img src="forward-arrow.png" width="16" class="inline-block opacity-0" :ref="'arrow' + (index + 1)"/></td>
                         </tr>
                     </tbody>
                 </Table>
-                <Pagination :totalPages = "Math.ceil(total / limit)" :page="page" @changePage="changePage"/>
+                <Pagination :totalPages = "Math.ceil(total / limit)" :page="page" @changePage="changePage" class="mb-10"/>
             </template>
         </div>
         <div v-else-if="minitab === 2" class="mt-5 ml-3">
@@ -60,7 +59,7 @@
                         <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
                             <td>{{ product.product_id }}</td>
                             <!-- <td>{{ product.product_name }}</td> -->
-                            <td><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
+                            <td class="text-start indent-10"><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
                             <td>{{ product.category_name }}</td>
                             <td>{{ product.store_name }}</td>
                             <td>{{ product.approved_at }}</td>
@@ -112,7 +111,7 @@
             async changeCategory(search) {
                 this.chosenCategory = parseInt(event.target.value)
                 if (search)
-                    await this.getProducts('');
+                    await this.getProducts(this.query);
             },
             async changeTab(tabNumber) {
                 this.minitab = tabNumber;
@@ -129,7 +128,7 @@
             async changePage(pageNumber) {
                 if (pageNumber === '...') return
                 if (pageNumber === '+') {
-                    if (this.page == this.total) return
+                    if (this.page == Math.ceil(this.total / this.limit)) return
                     this.page = this.page + 1
                 }
                 else if (pageNumber === '-') {

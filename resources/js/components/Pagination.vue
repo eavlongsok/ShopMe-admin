@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-auto h-12 flex justify-center items-center gap-x-2 mt-14 text-[20px] font-bold" v-if="totalPages > 1">
+    <div class="mx-auto h-12 flex justify-center items-center gap-x-2 mt-14 text-[20px] mb-10 font-bold" v-if="totalPages > 1">
         <button class="btn" @click="$emit('changePage', '-')"><img src="left-arrow.png" class="w-[15px] aspect-square" /></button>
         <button class="btn" v-for="i in formattedPageNumbers" @click="$emit('changePage', i)" :class="{'!bg-blue-500': page == i}">{{ i }}</button>
         <button class="btn" @click="$emit('changePage', '+')"><img src="right-arrow.png" class="w-[15px] aspect-square" /></button>

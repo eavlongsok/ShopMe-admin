@@ -23,9 +23,9 @@ class APIController extends Controller
             $limit = $request->limit;
         else $limit = 20;
 
-        if (isset($request->offset))
-            $offset = $request->offset;
-        else $offset = 0;
+        if (isset($request->page))
+            $page = $request->page;
+        else $page = 1;
 
         $userType = $request->userType;
 
@@ -33,9 +33,12 @@ class APIController extends Controller
 
         $idName = $userType == 2 ? 'seller_id' : 'buyer_id';
 
-        $users = DB::table($tableName)->skip($offset)->take($limit)->where('status', 1)->get([$idName, 'first_name', 'last_name', 'email', 'date_of_birth', 'status', 'created_at']);
+        $users = DB::table($tableName)->skip(($page-1) * $limit)->take($limit)->where('status', 1)->orderBy('first_name', 'asc')->get([$idName, 'first_name', 'last_name', 'email', 'date_of_birth', 'status', 'created_at']);
+
+        $total = DB::table($tableName)->where('status', 1)->count();
+
         if (isset($users))
-            return response($users, 200);
+            return response()->json(['users' => $users, 'total' => $total], 200);
         else return response()->json(['message' => 'no users found'], 404);
     }
 
@@ -51,78 +54,105 @@ class APIController extends Controller
             $limit = $request->limit;
         else $limit = 20;
 
-        if ($request->has('pageNumber'))
-            $pageNumber = $request->pageNumber;
+        if ($request->has('page'))
+            $pageNumber = $request->page;
         else $pageNumber = 1;
 
         if ($request->has('status'))
         	$status = intval($request->status);
         else $status = 1;
 
-        // return response()->json(['status' => $status, 'limit' => $limit, 'pageNumber' => $pageNumber, 'query' => $query]);
         if ($request->has('sort'))
             $sort = $request->sort;
         else $sort = 'asc';
 
         if ($userType == 'buyer') {
             if (empty($query)) {
-                $buyers = Buyer::where('buyer.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('address', 'address.buyer_id', 'buyer.buyer_id')->leftJoin('region', 'address.region_id', 'region.region_id')->orderBy('first_name', $sort)->get([
-                    'buyer.buyer_id', 'buyer.first_name', 'buyer.last_name', 'buyer.email', 'buyer.status', 'buyer.created_at', 'buyer.date_of_birth', 'buyer.banned_at', 'buyer.banned_by', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name'
-                ]);
+                $buyers = Buyer::where('buyer.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('address', 'address.buyer_id', 'buyer.buyer_id')->leftJoin('region', 'address.region_id', 'region.region_id')->get(['buyer.buyer_id', 'buyer.first_name', 'buyer.last_name', 'buyer.email', 'buyer.status', 'buyer.img_url', 'buyer.created_at', 'buyer.date_of_birth', 'buyer.banned_at', 'buyer.banned_by', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name']);
+
+                $total = Buyer::where('buyer.status', $status)->leftJoin('address', 'address.buyer_id', 'buyer.buyer_id')->leftJoin('region', 'address.region_id', 'region.region_id')->count();
+
                 $data = $buyers;
+
             }
             else if ($searchForID) {
                 $id = intval(substr($query, 1));
-                $buyer = Buyer::where('buyer_id', $id)->where('status', $status)->first();
-                if ($buyer === null) return response()->json([]);
-                return response()->json([$buyer], 200);
+                $buyer = DB::table('buyer')->leftJoin('address', 'address.buyer_id', 'buyer.buyer_id')->leftJoin('region', 'address.region_id', 'region.region_id')->where('buyer.buyer_id', $id)->where('buyer.status', $status)->select(['buyer.buyer_id', 'buyer.first_name', 'buyer.last_name', 'buyer.email', 'buyer.status', 'buyer.created_at', 'buyer.date_of_birth', 'buyer.img_url', 'buyer.banned_at', 'buyer.banned_by', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name'])->first();
+                if ($buyer === null) {
+                    $buyer = [];
+                    $total = 0;
+                }
+                else
+                    $total = 1;
+                $data = array($buyer);
             }
             else {
                 $buyers = Buyer::search($query)->where('status', $status)->orderBy('first_name', $sort)->paginate($limit, 'page', $pageNumber);
-                $data = $buyers->items();
+
+                $data = [];
+
+                foreach ($buyers as $buyer) {
+                    $_buyer = Buyer::where('buyer.buyer_id', $buyer->buyer_id)->where('buyer.status', $status)->leftJoin('address', 'address.buyer_id', 'buyer.buyer_id')->leftJoin('region', 'address.region_id', 'region.region_id')->get(['buyer.buyer_id', 'buyer.first_name', 'buyer.last_name', 'buyer.email', 'buyer.status', 'buyer.created_at', 'buyer.img_url', 'buyer.date_of_birth', 'buyer.banned_at', 'buyer.banned_by', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name']);
+                    if (count($_buyer) != 0)
+                        array_push($data, $_buyer[0]);
+                }
+
+                $total = $buyers->total();
             }
-
-            return response($data);
-
         }
 
-        if ($userType == 'seller') {
+        else if ($userType == 'seller') {
             if (empty($query)) {
-                $sellers = Seller::where('seller.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->leftJoin('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
+                $sellers = Seller::where('seller.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->leftJoin('address', 'address.seller_id', 'seller.seller_id')->leftJoin('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.img_url', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
 
                 $data = $sellers;
+
+                $total = Seller::where('seller.status', $status)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->leftJoin('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->count();
             }
             else if ($searchForID) {
                 $id = intval(substr($query, 1));
-                $seller = Seller::where('seller.seller_id', $id)->where('seller.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
+                $seller = Seller::where('seller.seller_id', $id)->where('seller.status', $status)->take($limit)->skip(($pageNumber - 1) * $limit)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.img_url', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
 
-                if ($seller === null) return response()->json([]);
+                if ($seller === null) {
+                    $seller = [];
+                    $total = 0;
+                }
+                else $total = 1;
                 $data = $seller;
             }
             else {
                 $verifications = Verification::search($query)->paginate($limit,'page', $pageNumber);
 
                 $allVerificationResult = $verifications->items();
+
+                $totalVerifications = $verifications->total();
                 $data = [];
 
                 foreach($allVerificationResult as $verification) {
-                    $_seller = Seller::where('seller.seller_id', $verification->seller_id)->where('seller.status', $status)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->join('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.address_id', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
-                    array_push($data, $_seller);
+                    $_seller = Seller::where('seller.seller_id', $verification->seller_id)->where('seller.status', $status)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->join('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.img_url', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
+                    if (count($_seller) != 0)
+                        array_push($data, $_seller[0]);
                 }
 
                 $sellers = Seller::search($query)->where('status', $status)->orderBy('first_name', $sort)->paginate($limit,'page', $pageNumber);
+
+                $totalSellers = $sellers->total();
+
+                $total = $totalVerifications + $totalSellers;
+
                 $allSellers = $sellers->items();
 
-                foreach ($allSellers as $seller) {
-                    // return response()->json($seller, 200);
-                    $_seller = Seller::where('seller.seller_id', $seller->seller_id)->where('seller.status', $status)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
-                    array_push($data, $_seller[0]);
-                }
-                return response()->json($data, 200);
-            }
+                // $data = [];
 
-            return response($data);
+                foreach ($allSellers as $seller) {
+                    $_seller = Seller::where('seller.seller_id', $seller->seller_id)->leftJoin('verification', 'verification.seller_id', '=', 'seller.seller_id')->join('address', 'address.seller_id', 'seller.seller_id')->join('region', 'address.region_id', 'region.region_id')->leftJoin('admin', 'admin.admin_id', 'verification.verified_by')->get(['seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.status', 'seller.created_at', 'seller.date_of_birth', 'seller.img_url', 'seller.banned_at', 'seller.banned_by', 'verification.ver_id', 'verification.store_name', 'verification.business_info', 'verification.verified_by', 'verification.verified_at', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name']);
+
+                    if (count($_seller) != 0)
+                        array_push($data, $_seller[0]);
+                }
+            }
         }
+        return response()->json(['users' => $data, 'total' => $total], 200);
     }
 
     public function ban(Request $request, $userType) {
@@ -161,7 +191,8 @@ class APIController extends Controller
 
         if (empty($query)) {
             $listingRequests = DB::table('listing_request')->skip($limit * ($page - 1))->take($limit)->join('product', 'listing_request.product_id', '=', 'product.product_id')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', '=', 'seller.seller_id')->orderBy("listing_request.created_at")->where('product.is_approved', '0')->get();
-            $total = $listingRequests = DB::table('listing_request')->join('product', 'listing_request.product_id', '=', 'product.product_id')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', '=', 'seller.seller_id')->where('product.is_approved', '0')->count();
+
+            $total = DB::table('listing_request')->join('product', 'listing_request.product_id', '=', 'product.product_id')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', '=', 'seller.seller_id')->where('product.is_approved', '0')->count();
         }
 
         else if ($searchByID) {
@@ -241,7 +272,7 @@ class APIController extends Controller
 
         if ($category_id === 0) {
             if (empty($query)) {
-                $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.is_approved', 1)->whereNull('product.banned_by')->take($limit)->offset($limit * ($page - 1))->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+                $products = DB::table('product')->join('seller', 'product.seller_id', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.is_approved', 1)->whereNull('product.banned_by')->take($limit)->offset($limit * ($page - 1))->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
 
                 $total = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.is_approved', 1)->whereNull('product.banned_by')->count();
             }
@@ -260,10 +291,9 @@ class APIController extends Controller
                 foreach($results->items() as $result) {
                     $product = DB::table('product')->join('seller', 'seller.seller_id', '=', 'product.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.product_id', $result->product_id)->whereNull('product.banned_by')->get(['product.*', 'verification.store_name', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
 
-                    array_push($products, $product);
+                    if (count($product) != 0)
+                        array_push($products, $product[0]);
                 }
-
-                if (count($products) == 1) $products = $products[0];
             }
         }
 
@@ -289,10 +319,9 @@ class APIController extends Controller
                 foreach($results->items() as $result) {
                     $product = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->where('product.product_id', $result->product_id)->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->whereNull('product.banned_by')->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
 
-                    array_push($products, $product);
+                    if (count($product) != 0)
+                        array_push($products, $product[0]);
                 }
-
-                if (count($products) == 1) $products = $products[0];
             }
         }
 
@@ -326,52 +355,61 @@ class APIController extends Controller
         if ($category_id === 0) {
             if (empty($query)) {
                 $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->where('product.is_approved', 1)->whereNotNull('product.banned_by')->take($limit)->offset($limit * ($page - 1))->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'ban_admin.first_name AS ban_admin_first_name', 'ban_admin.last_name AS ban_admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+
+                $total = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->where('product.is_approved', 1)->whereNotNull('product.banned_by')->count();
             }
             else if ($searchByID) {
                 $id = intval(substr($query, 1));
-                $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->where('product.product_id', $id)->where('product.is_approved', 1)->whereNotNull('product.banned_by')->take($limit)->offset($limit * ($page - 1))->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'ban_admin.first_name AS ban_admin_first_name', 'ban_admin.last_name AS ban_admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+                $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->where('product.product_id', $id)->where('product.is_approved', 1)->whereNotNull('product.banned_by')->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'ban_admin.first_name AS ban_admin_first_name', 'ban_admin.last_name AS ban_admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+
+                if (isset($products)) $total = 1;
+                else $total = 0;
             }
             else {
                  $results = Product::search($query)->where('is_approved', 1)->paginate($limit, 'page', $page);
 
-                if (count($results->items()) == 0) return response()->json([]);
+                $total = $results->total();
 
                 $products = [];
                 foreach($results->items() as $result) {
                     $product = DB::table('product')->join('seller', 'seller.seller_id', '=', 'product.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->where('product.product_id', $result->product_id)->whereNotNull('product.banned_by')->get(['product.*', 'verification.store_name', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'ban_admin.first_name AS ban_admin_first_name', 'ban_admin.last_name AS ban_admin_last_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
 
-                    array_push($products, $product);
+                    if (count($product) != 0)
+                        array_push($products, $product[0]);
                 }
-
-                if (count($products) == 1) $products = $products[0];
             }
         }
 
         else {
             if (empty($query)) {
                 $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->where('product.category_id', $category_id)->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.is_approved', 1)->whereNotNull('product.banned_by')->take($limit)->offset($limit * ($page - 1))->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'ban_admin.first_name AS ban_admin_first_name', 'ban_admin.last_name AS ban_admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+
+                $total = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->where('product.category_id', $category_id)->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->where('product.is_approved', 1)->whereNotNull('product.banned_by')->count();
             }
             else if ($searchByID) {
                 $id = intval(substr($query, 1));
                 $products = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->where('product.product_id', $id)->where('product.is_approved', 1)->where('category.category_id', $category_id)->whereNotNull('product.banned_by')->take($limit)->offset($limit * ($page - 1))->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by AS approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'ban_admin.first_name AS ban_admin_first_name', 'ban_admin.last_name AS ban_admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
+
+                if (isset($products)) $total = 1;
+                else $total = 0;
             }
             else {
                 $results = Product::search($query)->where('category_id', $category_id)->where('is_approved', 1)->paginate($limit, 'page', $page);
 
-                if (count($results->items()) == 0) return response()->json([]);
+                $total = $results->total();
 
                 $products = [];
                 foreach($results->items() as $result) {
                     $product = DB::table('product')->join('seller', 'product.seller_id', '=', 'seller.seller_id')->join('product_img', 'product.product_id', '=', 'product_img.product_id')->join('category', 'product.category_id', '=', 'category.category_id')->join('verification', 'verification.seller_id', 'seller.seller_id')->join('listing_request', 'listing_request.product_id', '=', 'product.product_id')->where('product.product_id', $result->product_id)->join('admin', 'listing_request.approved_by', '=', 'admin.admin_id')->join('admin AS ban_admin', 'ban_admin.admin_id', 'product.banned_by')->whereNotNull('product.banned_by')->get(['product.*', 'listing_request.approved_at', 'listing_request.approved_by', 'admin.first_name AS admin_first_name', 'admin.last_name AS admin_last_name', 'admin.admin_id', 'ban_admin.first_name AS ban_admin_first_name', 'ban_admin.last_name AS ban_admin_last_name', 'verification.store_name', 'product_img.img_url AS product_img', 'seller.seller_id', 'seller.first_name AS seller_first_name', 'seller.last_name AS seller_last_name', 'seller.email', 'seller.img_url AS store_logo', 'category.category_name']);
 
-                    array_push($products, $product);
+                    if (count($product) != 0)
+                        array_push($products, $product[0]);
                 }
 
-                if (count($products) == 1) $products = $products[0];
             }
         }
 
-        return response()->json($products, 200);
+        return response()->json(['products' => $products, 'total'=> $total], 200);
     }
 
     public function banProduct(Request $request) {
@@ -515,9 +553,9 @@ class APIController extends Controller
             $page = $request->page;
         else $page = 1;
 
-        $pendingVerificationAccounts = DB::table('verification')->leftJoin('seller', 'verification.seller_id', '=', 'seller.seller_id')->leftJoin('address', 'address.seller_id', 'seller.seller_id')->leftJoin('region', 'address.region_id', 'region.region_id')->where('verification.verified_at', null)->where('seller.status', 1)->orderBy('verification.created_at')->paginate($limit, ['verification.ver_id', 'verification.store_name', 'verification.business_info', 'seller.seller_id', 'verification.created_at', 'seller.first_name', 'seller.img_url', 'seller.last_name', 'seller.email', 'seller.date_of_birth', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'verification.created_at'], 'page', $request->page);
+        $pendingVerificationAccounts = DB::table('verification')->leftJoin('seller', 'verification.seller_id', '=', 'seller.seller_id')->leftJoin('address', 'address.seller_id', 'seller.seller_id')->leftJoin('region', 'address.region_id', 'region.region_id')->where('verification.verified_at', null)->where('seller.status', 1)->orderBy('verification.created_at')->paginate($limit, ['verification.ver_id', 'verification.store_name', 'verification.business_info', 'seller.seller_id', 'verification.created_at', 'seller.first_name', 'seller.img_url', 'seller.last_name', 'seller.email', 'seller.date_of_birth', 'address.city', 'address.street_number', 'address.building_number', 'address.zipcode', 'region.region_id', 'region.region_name', 'verification.created_at'], 'page', $page);
 
-        return response($pendingVerificationAccounts, 200);
+        return response()->json(['sellers' => $pendingVerificationAccounts->items(), 'total' => $pendingVerificationAccounts->total()], 200);
     }
 
     public function verifyAccount(Request $request) {
@@ -557,6 +595,14 @@ class APIController extends Controller
         $all_seller_count = DB::table('seller')->count();
 
         return response()->json(['buyerCount30Days' => $buyer_count_30_days, 'sellerCount30Days' => $seller_count_30_days, 'totalCount30Days' => $buyer_count_30_days + $seller_count_30_days, 'totalCountAllTime' => $all_buyer_count + $all_seller_count], 200);
+    }
+
+    public function getAllProductInformation(Request $request) {
+        $product_requested_30_days = DB::table('listing_request')->where('created_at', '>', Carbon::now()->subDays(30))->count();
+        $product_approved_30_days = DB::table('listing_request')->whereNotNull('approved_at')->where('approved_at', '>', Carbon::now()->subDays(30))->count();
+        $total_product_count = DB::table('listing_request')->whereNotNull('approved_at')->count();
+
+        return response()->json(['productRequested30Days' => $product_requested_30_days, 'productApproved30Days' => $product_approved_30_days, 'totalProductCount' => $total_product_count], 200);
     }
 
     public function uploadImage(Request $request, $name) {

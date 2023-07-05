@@ -6,7 +6,7 @@
         _product.banned_by = banned_by
     }"/>
     <div v-else>
-        <h2 class="heading-2 mb-3">Removed Product List</h2>
+        <h2 class="heading-2 mb-3">Banned Products</h2>
         <select class="capitalize h-9 rounded outline-none hover:border-black border-[1px] border-white focus:border-[1px] focus:border-black mr-3 mt-5 focus:bg-gray-100 bg-white p-2" @change="changeCategory()">
             <option value=0 selected>all categories</option>
             <option v-for="category in categories" :value="category.category_id">{{ category.category_name }}</option>
@@ -22,14 +22,14 @@
             <Loader :size="4" :thickness="0.4"/>
         </div>
 
-        <h2 class="text-xl text-center mt-16 font-bold" v-if="searched && products.length === 0">No product was found</h2>
+        <h2 class="text-xl text-center mt-16 font-bold" v-if="searched && products.length === 0 && loaded">No product was found</h2>
 
         <div v-else-if="searched && products.length > 0" class="mb-14">
             <Table class="w-11/12 mt-3 mb-5" :fields="fields" >
                 <tbody>
                     <tr v-for="(product, index) in products" @mouseover="displayArrow('arrow', index+1)" @mouseleave="hideArrow('arrow', index+1)" @click="infoPage = true; _product = product">
                         <td>{{ product.product_id }}</td>
-                        <td><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
+                        <td class="text-start indent-10"><img :src="product.product_img" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.product_name }}</td>
                         <td>{{ product.category_name }}</td>
                         <td>{{ formatToCurrency(product.price) }}</td>
                         <td><img :src="product.store_logo" width="40" class="rounded-[50%] inline-block mr-3 border-2 aspect-square"/>{{ product.store_name }}</td>
@@ -89,7 +89,7 @@
             async changePage(pageNumber) {
                 if (pageNumber === '...') return
                 if (pageNumber === '+') {
-                    if (this.page == this.products.length) return
+                    if (this.page == Math.ceil(this.total / this.limit)) return
                     this.page = this.page + 1
                 }
                 else if (pageNumber === '-') {
@@ -123,7 +123,8 @@
                     })
 
                     console.log(response.data)
-                    this.products = response.data
+                    this.total = response.data.total
+                    this.products = response.data.products
                     this.loaded = true
                 } catch(err) {
                     console.log(err.response.data)

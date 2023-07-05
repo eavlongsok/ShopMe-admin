@@ -147,6 +147,7 @@
                     })
 
                     console.log(response.data)
+                    this.$emit('backToMain')
                     this.$emit('reloadVerification')
 
                 }
@@ -154,7 +155,7 @@
                     console.log(err)
                 }
             }
-        }
+        },
     }
 
 </script>
