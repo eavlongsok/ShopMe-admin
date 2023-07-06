@@ -21499,7 +21499,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             case 10:
               _context.prev = 10;
               _context.t0 = _context["catch"](3);
-              /* eslint-disable */(_console = console).log.apply(_console, _toConsumableArray(oo_oo("e7a99270_0", _context.t0.response.data)));
+              /* eslint-disable */(_console = console).log.apply(_console, _toConsumableArray(oo_oo("6e88fd43_0", _context.t0.response.data)));
               alert('Something went wrong. Please try again later.');
             case 14:
             case "end":
@@ -21527,19 +21527,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               });
             case 5:
               respones = _context2.sent;
-              _context2.next = 12;
+              alert('Product has been removed');
+              _context2.next = 13;
               break;
-            case 8:
-              _context2.prev = 8;
+            case 9:
+              _context2.prev = 9;
               _context2.t0 = _context2["catch"](2);
               alert('Something went wrong. Please try again later');
               /* eslint-disable */
-              (_console2 = console).log.apply(_console2, _toConsumableArray(oo_oo("e7a99270_1", _context2.t0.response.data)));
-            case 12:
+              (_console2 = console).log.apply(_console2, _toConsumableArray(oo_oo("6e88fd43_1", _context2.t0.response.data)));
+            case 13:
             case "end":
               return _context2.stop();
           }
-        }, _callee2, null, [[2, 8]]);
+        }, _callee2, null, [[2, 9]]);
       }))();
     }
   },

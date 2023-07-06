@@ -204,6 +204,7 @@
                             'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
                         }
                     })
+                    alert('Product has been removed')
                 }
                 catch(err) {
                     alert('Something went wrong. Please try again later')
