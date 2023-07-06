@@ -605,6 +605,12 @@ class APIController extends Controller
         return response()->json(['productRequested30Days' => $product_requested_30_days, 'productApproved30Days' => $product_approved_30_days, 'totalProductCount' => $total_product_count], 200);
     }
 
+    public function getAllSalesInformation(Request $request) {
+        $sales_30_days = DB::table('order')->where('created_at', '>', Carbon::now()->subDays(30))->count();
+        $sales_all_time = DB::table('order')->count();
+
+        return response()->json(['sales30Days' => $sales_30_days, 'salesAllTime' => $sales_all_time], 200);
+    }
     public function uploadImage(Request $request, $name) {
         $image = $request->file($name);
             $client = new Client();
